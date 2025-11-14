@@ -2,8 +2,6 @@
 
 一个统一的学术论文搜索和检索MCP服务器，集成了12+个学术平台。
 
-## ✨ 新特性 (MCP 1.22)
-
 ### 🔧 高级工具 (6个)
 - ✅ **智能参数完成** - 实时建议和上下文感知
 - ✅ **显示名称支持** - 更好的UI呈现
@@ -29,6 +27,22 @@
 
 ### 安装
 
+#### 作为CLI工具使用 (npx)
+```bash
+# 直接运行
+npx aigroup-paper-mcp --help
+
+# 搜索论文
+npx aigroup-paper-mcp search "machine learning"
+
+# 获取论文详情
+npx aigroup-paper-mcp fetch "2301.00001" --source arxiv
+
+# 列出平台类别
+npx aigroup-paper-mcp categories
+```
+
+#### 作为MCP服务器使用
 ```bash
 npm install
 ```
@@ -205,13 +219,13 @@ paper_comparison({
 
 ### MCP客户端配置
 
-**Claude Desktop:**
+**Claude Desktop、RooCode、通义灵码:**
 ```json
 {
   "mcpServers": {
     "aigroup-paper": {
-      "command": "node",
-      "args": ["path/to/aigroup-paper-mcp/dist/server.js"]
+      "command": "npx",
+      "args": ["aigroup-paper-mcp"]
     }
   }
 }
@@ -226,57 +240,7 @@ CACHE_TTL=3600
 MAX_SEARCH_LIMIT=100
 ```
 
-## 📊 特性对比
 
-| 特性 | v0.1.0 | v0.2.0 (MCP 1.22) |
-|------|--------|-------------------|
-| SDK版本 | 1.0.4 | 1.22.0 |
-| 工具API | 低级Server | 高级McpServer |
-| Resources | ❌ | ✅ 3个资源 |
-| Prompts | ❌ | ✅ 3个模板 |
-| 参数完成 | ❌ | ✅ 智能补全 |
-| 通知去抖动 | ❌ | ✅ 已启用 |
-| 动态工具管理 | ❌ | ✅ 支持 |
-| 结构化内容 | 部分 | ✅ 完整支持 |
-
-## 📚 文档
-
-- [MCP 1.22升级指南](docs/MCP_1.22_UPGRADE.md) - 详细的升级说明
-- [缓存使用说明](docs/CACHE_USAGE.md) - 缓存机制详解
-- [重构总结](docs/REFACTORING_SUMMARY.md) - 代码重构记录
-
-## 🧪 测试
-
-```bash
-# 运行测试
-npm test
-
-# 测试覆盖率
-npm run test:coverage
-
-# 使用MCP Inspector测试
-npx @modelcontextprotocol/inspector
-```
-
-## 🔍 调试
-
-使用MCP Inspector连接到服务器：
-```bash
-npx @modelcontextprotocol/inspector
-```
-
-然后测试：
-1. 工具调用
-2. 资源访问
-3. 提示模板
-4. 参数完成
-
-## 📈 性能
-
-- **并行搜索:** 多平台同时查询，显著提升速度
-- **智能缓存:** LRU缓存机制，减少API调用
-- **通知去抖动:** 批量更新时减少网络流量
-- **结果去重:** 自动跨平台去重
 
 ## 🤝 贡献
 
@@ -286,40 +250,4 @@ npx @modelcontextprotocol/inspector
 
 MIT License - 详见 [LICENSE](LICENSE)
 
-## 🆕 更新日志
 
-### v0.2.0 (2025-01-14)
-- ✅ 升级到MCP SDK 1.22.0
-- ✅ 实现Resources系统（3个资源）
-- ✅ 实现Prompts系统（3个模板）
-- ✅ 添加参数完成功能
-- ✅ 启用通知去抖动
-- ✅ 实现动态工具管理
-- ✅ 优化类型系统
-- ✅ 改进错误处理
-
-### v0.1.0 (2024-12-XX)
-- 初始版本
-- 6个核心工具
-- 12+平台支持
-- 基础缓存系统
-
-## 🔗 相关链接
-
-- [Model Context Protocol官网](https://modelcontextprotocol.io)
-- [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
-- [MCP Specification](https://spec.modelcontextprotocol.io)
-
-## 💬 支持
-
-如有问题或建议，请：
-1. 查看[文档](docs/)
-2. 搜索[已有issues](https://github.com/yourusername/aigroup-paper-mcp/issues)
-3. 创建[新issue](https://github.com/yourusername/aigroup-paper-mcp/issues/new)
-
----
-
-**项目版本:** 0.2.0  
-**MCP SDK:** 1.22.0  
-**Node.js:** ≥18.0.0  
-**License:** MIT

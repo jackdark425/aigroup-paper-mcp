@@ -4,6 +4,9 @@ node_modules/
 # Build output
 dist/
 *.tsbuildinfo
+# Package files
+*.tgz
+*.tar.gz
 
 # Environment
 .env
