@@ -1,13 +1,19 @@
 {
   "name": "aigroup-paper-mcp",
-  "version": "0.2.0",
+  "version": "0.2.7",
   "description": "A unified academic paper search and retrieval MCP server integrating 11+ academic platforms",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "aigroup-paper-mcp": "dist/cli.js"
+    "aigroup-paper-mcp": "dist/server.js"
   },
+  "files": [
+    "dist/**/*",
+    "LICENSE",
+    "README.md",
+    "claude_desktop_config.json"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsx src/server.ts",

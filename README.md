@@ -223,7 +223,7 @@ paper_comparison({
 ```json
 {
   "mcpServers": {
-    "aigroup-paper": {
+    "aigroup-paper-mcp": {
       "command": "npx",
       "args": ["aigroup-paper-mcp"]
     }

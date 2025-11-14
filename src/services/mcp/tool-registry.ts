@@ -90,6 +90,23 @@ export class ToolRegistry {
           };
           
           const result = await searchPapers(toolArgs);
+          
+          // 映射返回值到 outputSchema 期望的结构
+          const mappedResult = {
+            results: result.papers.map(paper => ({
+              id: paper.id,
+              title: paper.title,
+              authors: paper.authors.map(a => a.name),
+              abstract: paper.abstract || undefined,
+              published: paper.publishedDate?.toISOString() || undefined,
+              source: paper.source,
+              citations: paper.citationCount || undefined,
+              url: paper.urls?.landing || paper.urls?.abstract || undefined
+            })),
+            total: result.total,
+            sources: Object.keys(result.totalBySource)
+          };
+          
           return {
             content: [
               {
@@ -97,7 +114,7 @@ export class ToolRegistry {
                 text: JSON.stringify(result, null, 2)
               }
             ],
-            structuredContent: result as any
+            structuredContent: mappedResult
           };
         } catch (error: any) {
           this.logger.error(`搜索论文失败: ${error.message}`);
@@ -144,15 +161,30 @@ export class ToolRegistry {
       },
       async (args) => {
         try {
-          const result = await fetchPaper(args);
+          const paper = await fetchPaper(args);
+          
+          // 映射返回值到 outputSchema 期望的结构
+          const mappedResult = {
+            paper: {
+              id: paper.id,
+              title: paper.title,
+              authors: paper.authors.map(a => a.name),
+              abstract: paper.abstract || undefined,
+              published: paper.publishedDate?.toISOString() || undefined,
+              source: paper.source,
+              citations: paper.citationCount || undefined,
+              url: paper.urls?.landing || paper.urls?.abstract || undefined
+            }
+          };
+          
           return {
             content: [
               {
                 type: 'text',
-                text: JSON.stringify(result, null, 2)
+                text: JSON.stringify(paper, null, 2)
               }
             ],
-            structuredContent: result as any
+            structuredContent: mappedResult
           };
         } catch (error: any) {
           this.logger.error(`获取论文失败: ${error.message}`);
@@ -224,6 +256,28 @@ export class ToolRegistry {
           };
           
           const result = await fetchLatest(toolArgs);
+          
+          // 映射返回值到 outputSchema 期望的结构
+          // 处理可能的不同返回类型（包括缓存返回）
+          const papers = (result as any).papers || [];
+          const count = (result as any).count || (result as any).total || 0;
+          const category = (result as any).category || args.category;
+          
+          const mappedResult = {
+            papers: papers.map((paper: any) => ({
+              id: paper.id,
+              title: paper.title,
+              authors: Array.isArray(paper.authors)
+                ? paper.authors.map((a: any) => typeof a === 'string' ? a : a.name)
+                : [],
+              abstract: paper.abstract || undefined,
+              published: paper.publishedDate?.toISOString?.() || paper.publishedDate || undefined,
+              source: paper.source
+            })),
+            total: count,
+            category: category
+          };
+          
           return {
             content: [
               {
@@ -231,7 +285,7 @@ export class ToolRegistry {
                 text: JSON.stringify(result, null, 2)
               }
             ],
-            structuredContent: result as any
+            structuredContent: mappedResult
           };
         } catch (error: any) {
           this.logger.error(`获取最新论文失败: ${error.message}`);
@@ -274,6 +328,26 @@ export class ToolRegistry {
       async (args) => {
         try {
           const result = await listCategories(args);
+          
+          // 映射返回值到 outputSchema 期望的结构
+          const categories: any[] = [];
+          if (result.platforms) {
+            for (const platform of result.platforms) {
+              for (const cat of platform.categories) {
+                categories.push({
+                  source: platform.source,
+                  category: typeof cat === 'string' ? cat : cat.category || cat.name,
+                  description: typeof cat === 'object' ? cat.description : undefined,
+                  paperCount: typeof cat === 'object' ? cat.paperCount : undefined
+                });
+              }
+            }
+          }
+          
+          const mappedResult = {
+            categories
+          };
+          
           return {
             content: [
               {
@@ -281,7 +355,7 @@ export class ToolRegistry {
                 text: JSON.stringify(result, null, 2)
               }
             ],
-            structuredContent: result as any
+            structuredContent: mappedResult
           };
         } catch (error: any) {
           this.logger.error(`列出类别失败: ${error.message}`);
@@ -342,6 +416,18 @@ export class ToolRegistry {
           };
           
           const result = await advancedSearch(toolArgs);
+          
+          // 映射返回值到 outputSchema 期望的结构
+          const mappedResult = {
+            results: result.papers.map((paper: any) => ({
+              id: paper.id,
+              title: paper.title,
+              authors: paper.authors.map((a: any) => a.name || a),
+              relevance: paper.enhancedMetadata?.impactScore || undefined
+            })),
+            total: result.total
+          };
+          
           return {
             content: [
               {
@@ -349,7 +435,7 @@ export class ToolRegistry {
                 text: JSON.stringify(result, null, 2)
               }
             ],
-            structuredContent: result as any
+            structuredContent: mappedResult
           };
         } catch (error: any) {
           this.logger.error(`高级搜索失败: ${error.message}`);
@@ -408,6 +494,19 @@ export class ToolRegistry {
           };
           
           const result = await analyzeTrends(toolArgs);
+          
+          // 映射返回值到 outputSchema 期望的结构
+          const mappedResult = {
+            trends: result.dataPoints.map(dp => ({
+              period: dp.period,
+              paperCount: dp.count,
+              growthRate: result.growthRate,
+              topKeywords: dp.topKeywords || []
+            })),
+            topic: result.topic,
+            totalPapers: result.totalPapers
+          };
+          
           return {
             content: [
               {
@@ -415,7 +514,7 @@ export class ToolRegistry {
                 text: JSON.stringify(result, null, 2)
               }
             ],
-            structuredContent: result as any
+            structuredContent: mappedResult
           };
         } catch (error: any) {
           this.logger.error(`趋势分析失败: ${error.message}`);
@@ -440,7 +539,7 @@ export class ToolRegistry {
   private async getCategoriesForSource(source: PlatformSource): Promise<string[]> {
     try {
       const result = await listCategories({ source });
-      return result.platforms[0]?.categories.map((c: any) => c.category) || [];
+      return result.platforms[0]?.categories.map((c: any) => c.category || c) || [];
     } catch (error) {
       return [];
     }

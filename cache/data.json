@@ -1,396 +1,5 @@
 {
-  "fetch_latest:arxiv:cs.AI:3:false:true": {
-    "data": {
-      "papers": [
-        {
-          "id": "2012.12104v1",
-          "source": "arxiv",
-          "title": "A Deep Reinforcement Learning Approach for Ramp Metering Based on Traffic Video Data",
-          "abstract": "Ramp metering that uses traffic signals to regulate vehicle flows from the on-ramps has been widely implemented to improve vehicle mobility of the freeway. Previous studies generally update signal timings in real-time based on predefined traffic measures collected by point detectors, such as traffic volumes and occupancies. Comparing with point detectors, traffic cameras-which have been increasingly deployed on road networks-could cover larger areas and provide more detailed traffic information. In this work, we propose a deep reinforcement learning (DRL) method to explore the potential of traffic video data in improving the efficiency of ramp metering. The proposed method uses traffic video frames as inputs and learns the optimal control strategies directly from the high-dimensional visual inputs. A real-world case study demonstrates that, in comparison with a state-of-the-practice method, the proposed DRL method results in 1) lower travel times in the mainline, 2) shorter vehicle queues at the on-ramp, and 3) higher traffic flows downstream of the merging area. The results suggest that the proposed method is able to extract useful information from the video data for better ramp metering controls.",
-          "authors": [
-            {
-              "name": "Bing Liu"
-            },
-            {
-              "name": "Yu Tang"
-            },
-            {
-              "name": "Yuxiong Ji"
-            },
-            {
-              "name": "Yu Shen"
-            },
-            {
-              "name": "Yuchuan Du"
-            }
-          ],
-          "publishedDate": "2020-12-09T05:08:41.000Z",
-          "updatedDate": "2020-12-23T01:19:45.000Z",
-          "categories": [
-            "cs.CV",
-            "cs.AI"
-          ],
-          "urls": {},
-          "fullTextAvailable": false,
-          "metadata": {},
-          "enhancedMetadata": {
-            "impactScore": 100,
-            "influenceLevel": "very_high",
-            "isHighlyCited": false,
-            "isHotPaper": false,
-            "fullTextDetails": {
-              "available": false,
-              "urls": [],
-              "accessType": "open",
-              "verifiedAt": "2025-11-14T06:55:30.376Z",
-              "downloadable": false
-            },
-            "publicationYear": 2020,
-            "publicationMonth": 12,
-            "publicationQuarter": 4,
-            "authorCount": 5,
-            "hasCorrespondingAuthor": false,
-            "authorReputationScore": 20,
-            "platformAuthority": {
-              "score": 85,
-              "level": "high",
-              "factors": [
-                {
-                  "name": "预印本权威性",
-                  "score": 80,
-                  "description": "计算机科学和物理学领域权威预印本平台"
-                },
-                {
-                  "name": "审核机制",
-                  "score": 70,
-                  "description": "基础审核但无同行评审"
-                },
-                {
-                  "name": "更新频率",
-                  "score": 95,
-                  "description": "每日更新，时效性强"
-                }
-              ]
-            },
-            "summary": {
-              "keyPoints": [
-                "A Deep Reinforcement Learning Approach for Ramp Metering Based on Traffic Video Data",
-                "Ramp metering that uses traffic signals to regulate vehicle flows from the on-ramps has been widely implemented to improve vehicle mobility of the freeway",
-                "Previous studies generally update signal timings in real-time based on predefined traffic measures collected by point detectors, such as traffic volumes and occupancies",
-                "Comparing with point detectors, traffic cameras-which have been increasingly deployed on road networks-could cover larger areas and provide more detailed traffic information"
-              ],
-              "contributions": [
-                "propose a deep reinforcement learning (DRL) method to explore the potential of traffic video data in improving the efficiency of ramp metering"
-              ],
-              "mainResults": [],
-              "confidence": 0.7,
-              "methodology": "based on predefined traffic measures collected by point detectors, such as traffic volumes and occupancies",
-              "generated": "Ramp metering that uses traffic signals to regulate vehicle flows from the on-ramps has been widely implemented to improve vehicle mobility of the freeway.  A real-world case study demonstrates that, in comparison with a state-of-the-practice method, the proposed DRL method results in 1) lower travel times in the mainline, 2) shorter vehicle queues at the on-ramp, and 3) higher traffic flows downstream of the merging area.  The results suggest that the proposed method is able to extract useful information from the video data for better ramp metering controls.",
-              "language": "en"
-            },
-            "recencyScore": 0.1,
-            "citationVelocity": 0,
-            "identifiers": {
-              "arxivId": "2012.12104v1"
-            },
-            "dataQuality": {
-              "completeness": 100,
-              "accuracy": 100,
-              "consistency": 100,
-              "timeliness": 40,
-              "overall": 94,
-              "missingFields": [
-                "doi",
-                "journal",
-                "citationCount",
-                "keywords"
-              ],
-              "verifiedFields": [
-                "id",
-                "title",
-                "authors",
-                "publishedDate",
-                "source",
-                "abstract"
-              ],
-              "dataSource": "arxiv",
-              "lastValidated": "2025-11-14T06:55:30.377Z"
-            }
-          },
-          "citations": {
-            "bibtex": "@article{Liu2020,\n  title = {A Deep Reinforcement Learning Approach for Ramp Metering Based on Traffic Video Data},\n  author = {Bing Liu and Yu Tang and Yuxiong Ji and Yu Shen and Yuchuan Du},\n  year = {2020}\n}",
-            "apa": "Liu, B., Tang, Y., Ji, Y., Shen, Y., & Du, Y. (2020). A Deep Reinforcement Learning Approach for Ramp Metering Based on Traffic Video Data.",
-            "mla": "Liu, Bing, et al. \"A Deep Reinforcement Learning Approach for Ramp Metering Based on Traffic Video Data.\"",
-            "chicago": "Liu, Bing, et al. \"A Deep Reinforcement Learning Approach for Ramp Metering Based on Traffic Video Data.\"",
-            "ieee": "B. Liu et al., \"A Deep Reinforcement Learning Approach for Ramp Metering Based on Traffic Video Data,\"",
-            "harvard": "Liu, B. et al. 2020, 'A Deep Reinforcement Learning Approach for Ramp Metering Based on Traffic Video Data'"
-          }
-        },
-        {
-          "id": "2012.13026v1",
-          "source": "arxiv",
-          "title": "Rethink AI-based Power Grid Control: Diving Into Algorithm Design",
-          "abstract": "Recently, deep reinforcement learning (DRL)-based approach has shown promisein solving complex decision and control problems in power engineering domain.In this paper, we present an in-depth analysis of DRL-based voltage control fromaspects of algorithm selection, state space representation, and reward engineering.To resolve observed issues, we propose a novel imitation learning-based approachto directly map power grid operating points to effective actions without any interimreinforcement learning process. The performance results demonstrate that theproposed approach has strong generalization ability with much less training time.The agent trained by imitation learning is effective and robust to solve voltagecontrol problem and outperforms the former RL agents.",
-          "authors": [
-            {
-              "name": "Xiren Zhou"
-            },
-            {
-              "name": "Siqi Wang"
-            },
-            {
-              "name": "Ruisheng Diao"
-            },
-            {
-              "name": "Desong Bian"
-            },
-            {
-              "name": "Jiahui Duan"
-            },
-            {
-              "name": "Di Shi"
-            }
-          ],
-          "publishedDate": "2020-12-23T23:38:41.000Z",
-          "updatedDate": "2020-12-25T01:04:14.000Z",
-          "categories": [
-            "cs.AI"
-          ],
-          "urls": {},
-          "fullTextAvailable": false,
-          "metadata": {},
-          "enhancedMetadata": {
-            "impactScore": 100,
-            "influenceLevel": "very_high",
-            "isHighlyCited": false,
-            "isHotPaper": false,
-            "fullTextDetails": {
-              "available": false,
-              "urls": [],
-              "accessType": "open",
-              "verifiedAt": "2025-11-14T06:55:30.376Z",
-              "downloadable": false
-            },
-            "publicationYear": 2020,
-            "publicationMonth": 12,
-            "publicationQuarter": 4,
-            "authorCount": 6,
-            "hasCorrespondingAuthor": false,
-            "authorReputationScore": 20,
-            "platformAuthority": {
-              "score": 85,
-              "level": "high",
-              "factors": [
-                {
-                  "name": "预印本权威性",
-                  "score": 80,
-                  "description": "计算机科学和物理学领域权威预印本平台"
-                },
-                {
-                  "name": "审核机制",
-                  "score": 70,
-                  "description": "基础审核但无同行评审"
-                },
-                {
-                  "name": "更新频率",
-                  "score": 95,
-                  "description": "每日更新，时效性强"
-                }
-              ]
-            },
-            "summary": {
-              "keyPoints": [
-                "Rethink AI",
-                "Recently, deep reinforcement learning (DRL)-based approach has shown promisein solving complex decision and control problems in power engineering domain",
-                "In this paper, we present an in-depth analysis of DRL-based voltage control fromaspects of algorithm selection, state space representation, and reward engineering",
-                "To resolve observed issues, we propose a novel imitation learning-based approachto directly map power grid operating points to effective actions without any interimreinforcement learning process"
-              ],
-              "contributions": [
-                "present an in-depth analysis of DRL-based voltage control fromaspects of algorithm selection, state space representation, and reward engineering",
-                "propose a novel imitation learning-based approachto directly map power grid operating points to effective actions without any interimreinforcement learning process"
-              ],
-              "mainResults": [
-                "demonstrate that theproposed approach has strong generalization ability with much less training time"
-              ],
-              "confidence": 0.7,
-              "methodology": "",
-              "generated": "Recently, deep reinforcement learning (DRL)-based approach has shown promisein solving complex decision and control problems in power engineering domain.  The performance results demonstrate that theproposed approach has strong generalization ability with much less training time. The agent trained by imitation learning is effective and robust to solve voltagecontrol problem and outperforms the former RL agents.",
-              "language": "en"
-            },
-            "recencyScore": 0.2,
-            "citationVelocity": 0,
-            "identifiers": {
-              "arxivId": "2012.13026v1"
-            },
-            "dataQuality": {
-              "completeness": 100,
-              "accuracy": 100,
-              "consistency": 100,
-              "timeliness": 60,
-              "overall": 96,
-              "missingFields": [
-                "doi",
-                "journal",
-                "citationCount",
-                "keywords"
-              ],
-              "verifiedFields": [
-                "id",
-                "title",
-                "authors",
-                "publishedDate",
-                "source",
-                "abstract"
-              ],
-              "dataSource": "arxiv",
-              "lastValidated": "2025-11-14T06:55:30.377Z"
-            }
-          },
-          "citations": {
-            "bibtex": "@article{Zhou2020,\n  title = {Rethink AI-based Power Grid Control: Diving Into Algorithm Design},\n  author = {Xiren Zhou and Siqi Wang and Ruisheng Diao and Desong Bian and Jiahui Duan and Di Shi},\n  year = {2020}\n}",
-            "apa": "Zhou, X., Wang, S., Diao, R., Bian, D., Duan, J., & Shi, D. (2020). Rethink AI-based Power Grid Control: Diving Into Algorithm Design.",
-            "mla": "Zhou, Xiren, et al. \"Rethink AI-based Power Grid Control: Diving Into Algorithm Design.\"",
-            "chicago": "Zhou, Xiren, et al. \"Rethink AI-based Power Grid Control: Diving Into Algorithm Design.\"",
-            "ieee": "X. Zhou et al., \"Rethink AI-based Power Grid Control: Diving Into Algorithm Design,\"",
-            "harvard": "Zhou, X. et al. 2020, 'Rethink AI-based Power Grid Control: Diving Into Algorithm Design'"
-          }
-        },
-        {
-          "id": "2012.13293v1",
-          "source": "arxiv",
-          "title": "Fuzzy Commitments Offer Insufficient Protection to Biometric Templates Produced by Deep Learning",
-          "abstract": "In this work, we study the protection that fuzzy commitments offer when they are applied to facial images, processed by the state of the art deep learning facial recognition systems. We show that while these systems are capable of producing great accuracy, they produce templates of too little entropy. As a result, we present a reconstruction attack that takes a protected template, and reconstructs a facial image. The reconstructed facial images greatly resemble the original ones. In the simplest attack scenario, more than 78% of these reconstructed templates succeed in unlocking an account (when the system is configured to 0.1% FAR). Even in the \"hardest\" settings (in which we take a reconstructed image from one system and use it in a different system, with different feature extraction process) the reconstructed image offers 50 to 120 times higher success rates than the system's FAR.",
-          "authors": [
-            {
-              "name": "Danny Keller"
-            },
-            {
-              "name": "Margarita Osadchy"
-            },
-            {
-              "name": "Orr Dunkelman"
-            }
-          ],
-          "publishedDate": "2020-12-24T15:28:33.000Z",
-          "updatedDate": "2020-12-25T01:13:59.000Z",
-          "categories": [
-            "cs.CR",
-            "cs.AI"
-          ],
-          "urls": {},
-          "fullTextAvailable": false,
-          "metadata": {},
-          "enhancedMetadata": {
-            "impactScore": 100,
-            "influenceLevel": "very_high",
-            "isHighlyCited": false,
-            "isHotPaper": false,
-            "fullTextDetails": {
-              "available": false,
-              "urls": [],
-              "accessType": "open",
-              "verifiedAt": "2025-11-14T06:55:30.377Z",
-              "downloadable": false
-            },
-            "publicationYear": 2020,
-            "publicationMonth": 12,
-            "publicationQuarter": 4,
-            "authorCount": 3,
-            "hasCorrespondingAuthor": false,
-            "authorReputationScore": 10,
-            "platformAuthority": {
-              "score": 85,
-              "level": "high",
-              "factors": [
-                {
-                  "name": "预印本权威性",
-                  "score": 80,
-                  "description": "计算机科学和物理学领域权威预印本平台"
-                },
-                {
-                  "name": "审核机制",
-                  "score": 70,
-                  "description": "基础审核但无同行评审"
-                },
-                {
-                  "name": "更新频率",
-                  "score": 95,
-                  "description": "每日更新，时效性强"
-                }
-              ]
-            },
-            "summary": {
-              "keyPoints": [
-                "Fuzzy Commitments Offer Insufficient Protection to Biometric Templates Produced by Deep Learning",
-                "In this work, we study the protection that fuzzy commitments offer when they are applied to facial images, processed by the state of the art deep learning facial recognition systems",
-                "We show that while these systems are capable of producing great accuracy, they produce templates of too little entropy",
-                "As a result, we present a reconstruction attack that takes a protected template, and reconstructs a facial image"
-              ],
-              "contributions": [
-                "present a reconstruction attack that takes a protected template, and reconstructs a facial image"
-              ],
-              "mainResults": [
-                "We show that while these systems are capable of producing great accuracy, they produce templates of too little entropy"
-              ],
-              "confidence": 0.7,
-              "methodology": "",
-              "generated": "In this work, we study the protection that fuzzy commitments offer when they are applied to facial images, processed by the state of the art deep learning facial recognition systems.  In the simplest attack scenario, more than 78% of these reconstructed templates succeed in unlocking an account (when the system is configured to 0.  Even in the \"hardest\" settings (in which we take a reconstructed image from one system and use it in a different system, with different feature extraction process) the reconstructed image offers 50 to 120 times higher success rates than the system's FAR.",
-              "language": "en"
-            },
-            "recencyScore": 0.2,
-            "citationVelocity": 0,
-            "identifiers": {
-              "arxivId": "2012.13293v1"
-            },
-            "dataQuality": {
-              "completeness": 100,
-              "accuracy": 100,
-              "consistency": 100,
-              "timeliness": 60,
-              "overall": 96,
-              "missingFields": [
-                "doi",
-                "journal",
-                "citationCount",
-                "keywords"
-              ],
-              "verifiedFields": [
-                "id",
-                "title",
-                "authors",
-                "publishedDate",
-                "source",
-                "abstract"
-              ],
-              "dataSource": "arxiv",
-              "lastValidated": "2025-11-14T06:55:30.377Z"
-            }
-          },
-          "citations": {
-            "bibtex": "@article{Keller2020,\n  title = {Fuzzy Commitments Offer Insufficient Protection to Biometric Templates Produced by Deep Learning},\n  author = {Danny Keller and Margarita Osadchy and Orr Dunkelman},\n  year = {2020}\n}",
-            "apa": "Keller, D., Osadchy, M., & Dunkelman, O. (2020). Fuzzy Commitments Offer Insufficient Protection to Biometric Templates Produced by Deep Learning.",
-            "mla": "Keller, Danny, et al. \"Fuzzy Commitments Offer Insufficient Protection to Biometric Templates Produced by Deep Learning.\"",
-            "chicago": "Keller, Danny, et al. \"Fuzzy Commitments Offer Insufficient Protection to Biometric Templates Produced by Deep Learning.\"",
-            "ieee": "D. Keller, M. Osadchy, O. Dunkelman, \"Fuzzy Commitments Offer Insufficient Protection to Biometric Templates Produced by Deep Learning,\"",
-            "harvard": "Keller, D. et al. 2020, 'Fuzzy Commitments Offer Insufficient Protection to Biometric Templates Produced by Deep Learning'"
-          }
-        }
-      ],
-      "source": "arxiv",
-      "category": "cs.AI",
-      "count": 3,
-      "originalCount": 3,
-      "processedCount": 3,
-      "cached": false,
-      "cacheKey": "fetch_latest:arxiv:cs.AI:3:false:true",
-      "summaryMode": false,
-      "enhancementEnabled": true,
-      "message": "✨ Papers enhanced with impact analysis and smart summaries"
-    },
-    "expiresAt": 1763105130378,
-    "createdAt": 1763103330378
-  },
-  "fetch_latest:arxiv:cs:5:false:true": {
+  "fetch_latest:arxiv:cs:2:false:true": {
     "data": {
       "papers": [
         {
@@ -428,7 +37,7 @@
               "available": false,
               "urls": [],
               "accessType": "open",
-              "verifiedAt": "2025-11-14T07:29:40.765Z",
+              "verifiedAt": "2025-11-14T09:53:30.622Z",
               "downloadable": false
             },
             "publicationYear": 2020,
@@ -502,7 +111,7 @@
                 "abstract"
               ],
               "dataSource": "arxiv",
-              "lastValidated": "2025-11-14T07:29:40.765Z"
+              "lastValidated": "2025-11-14T09:53:30.622Z"
             }
           },
           "citations": {
@@ -572,7 +181,7 @@
               "available": false,
               "urls": [],
               "accessType": "open",
-              "verifiedAt": "2025-11-14T07:29:40.765Z",
+              "verifiedAt": "2025-11-14T09:53:30.622Z",
               "downloadable": false
             },
             "publicationYear": 2020,
@@ -644,7 +253,7 @@
                 "abstract"
               ],
               "dataSource": "arxiv",
-              "lastValidated": "2025-11-14T07:29:40.765Z"
+              "lastValidated": "2025-11-14T09:53:30.622Z"
             }
           },
           "citations": {
@@ -655,12 +264,49 @@
             "ieee": "Y. Shaalan et al., \"Collaborative residual learners for automatic icd10 prediction using prescribed medications,\"",
             "harvard": "Shaalan, Y. et al. 2020, 'Collaborative residual learners for automatic icd10 prediction using prescribed medications'"
           }
+        }
+      ],
+      "source": "arxiv",
+      "category": "cs",
+      "count": 2,
+      "originalCount": 2,
+      "processedCount": 2,
+      "cached": false,
+      "cacheKey": "fetch_latest:arxiv:cs:2:false:true",
+      "summaryMode": false,
+      "enhancementEnabled": true,
+      "message": "✨ Papers enhanced with impact analysis and smart summaries"
+    },
+    "expiresAt": 1763115810622,
+    "createdAt": 1763114010622
+  },
+  "fetch_latest:arxiv:cs:3:true:true": {
+    "data": {
+      "papers": [
+        {
+          "id": "2012.11325v1",
+          "title": "Detecting Botnet Attacks in IoT Environments: An Optimized Machine Learning Approach",
+          "authors": [
+            {
+              "name": "MohammadNoor Injadat"
+            },
+            {
+              "name": "Abdallah Moubayed"
+            },
+            {
+              "name": "Abdallah Shami"
+            }
+          ],
+          "publishedDate": "2020-12-16T16:39:55.000Z",
+          "source": "arxiv",
+          "abstract": "The increased reliance on the Internet and the corresponding surge in connectivity demand has led to a significant growth in Internet-of-Things (IoT) devices. The continued deployment of IoT devices h...",
+          "fullTextAvailable": false,
+          "impactScore": 100,
+          "influenceLevel": "very_high"
         },
         {
-          "id": "2012.11333v1",
-          "source": "arxiv",
-          "title": "Ensemble model for pre-discharge icd10 coding prediction",
-          "abstract": "The translation of medical diagnosis to clinical coding has wide range of applications in billing, aetiology analysis, and auditing. Currently, coding is a manual effort while the automation of such task is not straight forward. Among the challenges are the messy and noisy clinical records, case complexities, along with the huge ICD10 code space. Previous work mainly relied on discharge notes for prediction and was applied to a very limited data scale. We propose an ensemble model incorporating multiple clinical data sources for accurate code predictions. We further propose an assessment mechanism to provide confidence rates in predicted outcomes. Extensive experiments were performed on two new real-world clinical datasets (inpatient & outpatient) with unaltered case-mix distributions from Maharaj Nakorn Chiang Mai Hospital. We obtain multi-label classification accuracies of 0.73 and 0.58 for average precision, 0.56 and 0.35 for F1-scores and 0.71 and 0.4 accuracy in predicting principal diagnosis for inpatient and outpatient datasets respectively.",
+          "id": "2012.11327v1",
+          "title": "Collaborative residual learners for automatic icd10 prediction using prescribed medications",
           "authors": [
             {
               "name": "Yassien Shaalan"
@@ -670,393 +316,110 @@
             },
             {
               "name": "Piyapong Khumrin"
+            }
+          ],
+          "publishedDate": "2020-12-16T07:07:27.000Z",
+          "source": "arxiv",
+          "abstract": "Clinical coding is an administrative process that involves the translation of diagnostic data from episodes of care into a standard code format such as ICD10. It has many critical applications such as...",
+          "fullTextAvailable": false,
+          "impactScore": 100,
+          "influenceLevel": "very_high"
+        },
+        {
+          "id": "2012.11333v1",
+          "title": "Ensemble model for pre-discharge icd10 coding prediction",
+          "authors": [
+            {
+              "name": "Yassien Shaalan"
             },
             {
-              "name": "Krit Khwanngern"
+              "name": "Alexander Dokumentov"
             },
             {
-              "name": "Anawat Wisetborisu"
-            },
-            {
-              "name": "Thanakom Hatsadeang"
-            },
-            {
-              "name": "Nattapat Karaket"
-            },
-            {
-              "name": "Witthawin Achariyaviriya"
-            },
-            {
-              "name": "Sansanee Auephanwiriyakul"
-            },
-            {
-              "name": "Nipon Theera-Umpon"
-            },
-            {
-              "name": "Terence Siganakis"
+              "name": "Piyapong Khumrin"
             }
           ],
           "publishedDate": "2020-12-16T07:02:56.000Z",
-          "updatedDate": "2020-12-22T01:32:43.000Z",
-          "categories": [
-            "cs.IR",
-            "cs.LG"
-          ],
-          "urls": {},
-          "fullTextAvailable": false,
-          "metadata": {},
-          "enhancedMetadata": {
-            "impactScore": 100,
-            "influenceLevel": "very_high",
-            "isHighlyCited": false,
-            "isHotPaper": false,
-            "fullTextDetails": {
-              "available": false,
-              "urls": [],
-              "accessType": "open",
-              "verifiedAt": "2025-11-14T07:29:40.765Z",
-              "downloadable": false
-            },
-            "publicationYear": 2020,
-            "publicationMonth": 12,
-            "publicationQuarter": 4,
-            "authorCount": 11,
-            "hasCorrespondingAuthor": false,
-            "authorReputationScore": 20,
-            "platformAuthority": {
-              "score": 85,
-              "level": "high",
-              "factors": [
-                {
-                  "name": "预印本权威性",
-                  "score": 80,
-                  "description": "计算机科学和物理学领域权威预印本平台"
-                },
-                {
-                  "name": "审核机制",
-                  "score": 70,
-                  "description": "基础审核但无同行评审"
-                },
-                {
-                  "name": "更新频率",
-                  "score": 95,
-                  "description": "每日更新，时效性强"
-                }
-              ]
-            },
-            "summary": {
-              "keyPoints": [
-                "Ensemble model for pre",
-                "The translation of medical diagnosis to clinical coding has wide range of applications in billing, aetiology analysis, and auditing",
-                "Currently, coding is a manual effort while the automation of such task is not straight forward",
-                "Among the challenges are the messy and noisy clinical records, case complexities, along with the huge ICD10 code space"
-              ],
-              "contributions": [
-                "propose an ensemble model incorporating multiple clinical data sources for accurate code predictions"
-              ],
-              "mainResults": [],
-              "confidence": 0.7,
-              "methodology": "",
-              "generated": "The translation of medical diagnosis to clinical coding has wide range of applications in billing, aetiology analysis, and auditing. 35 for F1-scores and 0. 4 accuracy in predicting principal diagnosis for inpatient and outpatient datasets respectively.",
-              "language": "en"
-            },
-            "recencyScore": 0.2,
-            "citationVelocity": 0,
-            "identifiers": {
-              "arxivId": "2012.11333v1"
-            },
-            "dataQuality": {
-              "completeness": 100,
-              "accuracy": 100,
-              "consistency": 100,
-              "timeliness": 60,
-              "overall": 96,
-              "missingFields": [
-                "doi",
-                "journal",
-                "citationCount",
-                "keywords"
-              ],
-              "verifiedFields": [
-                "id",
-                "title",
-                "authors",
-                "publishedDate",
-                "source",
-                "abstract"
-              ],
-              "dataSource": "arxiv",
-              "lastValidated": "2025-11-14T07:29:40.765Z"
-            }
-          },
-          "citations": {
-            "bibtex": "@article{Shaalan2020,\n  title = {Ensemble model for pre-discharge icd10 coding prediction},\n  author = {Yassien Shaalan and Alexander Dokumentov and Piyapong Khumrin and Krit Khwanngern and Anawat Wisetborisu and Thanakom Hatsadeang and Nattapat Karaket and Witthawin Achariyaviriya and Sansanee Auephanwiriyakul and Nipon Theera-Umpon and Terence Siganakis},\n  year = {2020}\n}",
-            "apa": "Shaalan, Y., Dokumentov, A., Khumrin, P., Khwanngern, K., Wisetborisu, A., Hatsadeang, T., Karaket, N., Achariyaviriya, W., Auephanwiriyakul, S., Theera-Umpon, N., & Siganakis, T. (2020). Ensemble model for pre-discharge icd10 coding prediction.",
-            "mla": "Shaalan, Yassien, et al. \"Ensemble model for pre-discharge icd10 coding prediction.\"",
-            "chicago": "Shaalan, Yassien, et al. \"Ensemble model for pre-discharge icd10 coding prediction.\"",
-            "ieee": "Y. Shaalan et al., \"Ensemble model for pre-discharge icd10 coding prediction,\"",
-            "harvard": "Shaalan, Y. et al. 2020, 'Ensemble model for pre-discharge icd10 coding prediction'"
-          }
-        },
-        {
-          "id": "2012.11400v2",
           "source": "arxiv",
-          "title": "Unifying Homophily and Heterophily Network Transformation via Motifs",
-          "abstract": "Higher-order proximity (HOP) is fundamental for most network embedding methods due to its significant effects on the quality of node embedding and performance on downstream network analysis tasks. Most existing HOP definitions are based on either homophily to place close and highly interconnected nodes tightly in embedding space or heterophily to place distant but structurally similar nodes together after embedding. In real-world networks, both can co-exist, and thus considering only one could limit the prediction performance and interpretability. However, there is no general and universal solution that takes both into consideration. In this paper, we propose such a simple yet powerful framework called homophily and heterophliy preserving network transformation (H2NT) to capture HOP that flexibly unifies homophily and heterophily. Specifically, H2NT utilises motif representations to transform a network into a new network with a hybrid assumption via micro-level and macro-level walk paths. H2NT can be used as an enhancer to be integrated with any existing network embedding methods without requiring any changes to latter methods. Because H2NT can sparsify networks with motif structures, it can also improve the computational efficiency of existing network embedding methods when integrated. We conduct experiments on node classification, structural role classification and motif prediction to show the superior prediction performance and computational efficiency over state-of-the-art methods. In particular, DeepWalk-based H2 NT achieves 24% improvement in terms of precision on motif prediction, while reducing 46% computational time compared to the original DeepWalk.",
-          "authors": [
-            {
-              "name": "Yan Ge"
-            },
-            {
-              "name": "Jun Ma"
-            },
-            {
-              "name": "Li Zhang"
-            },
-            {
-              "name": "Haiping Lu"
-            }
-          ],
-          "publishedDate": "2020-12-21T15:03:18.000Z",
-          "updatedDate": "2020-12-29T01:19:54.000Z",
-          "categories": [
-            "cs.SI",
-            "cs.LG"
-          ],
-          "urls": {},
+          "abstract": "The translation of medical diagnosis to clinical coding has wide range of applications in billing, aetiology analysis, and auditing. Currently, coding is a manual effort while the automation of such t...",
           "fullTextAvailable": false,
-          "metadata": {},
-          "enhancedMetadata": {
-            "impactScore": 100,
-            "influenceLevel": "very_high",
-            "isHighlyCited": false,
-            "isHotPaper": false,
-            "fullTextDetails": {
-              "available": false,
-              "urls": [],
-              "accessType": "open",
-              "verifiedAt": "2025-11-14T07:29:40.765Z",
-              "downloadable": false
-            },
-            "publicationYear": 2020,
-            "publicationMonth": 12,
-            "publicationQuarter": 4,
-            "authorCount": 4,
-            "hasCorrespondingAuthor": false,
-            "authorReputationScore": 10,
-            "platformAuthority": {
-              "score": 85,
-              "level": "high",
-              "factors": [
-                {
-                  "name": "预印本权威性",
-                  "score": 80,
-                  "description": "计算机科学和物理学领域权威预印本平台"
-                },
-                {
-                  "name": "审核机制",
-                  "score": 70,
-                  "description": "基础审核但无同行评审"
-                },
-                {
-                  "name": "更新频率",
-                  "score": 95,
-                  "description": "每日更新，时效性强"
-                }
-              ]
-            },
-            "summary": {
-              "keyPoints": [
-                "Unifying Homophily and Heterophily Network Transformation via Motifs",
-                "Higher-order proximity (HOP) is fundamental for most network embedding methods due to its significant effects on the quality of node embedding and performance on downstream network analysis tasks",
-                "Most existing HOP definitions are based on either homophily to place close and highly interconnected nodes tightly in embedding space or heterophily to place distant but structurally similar nodes together after embedding",
-                "In real-world networks, both can co-exist, and thus considering only one could limit the prediction performance and interpretability"
-              ],
-              "contributions": [
-                "propose such a simple yet powerful framework called homophily and heterophliy preserving network transformation (H2NT) to capture HOP that flexibly unifies homophily and heterophily"
-              ],
-              "mainResults": [],
-              "confidence": 0.7,
-              "methodology": "based on either homophily to place close and highly interconnected nodes tightly in embedding space or heterophily to place distant but structurally similar nodes together after embedding",
-              "generated": "Higher-order proximity (HOP) is fundamental for most network embedding methods due to its significant effects on the quality of node embedding and performance on downstream network analysis tasks.  We conduct experiments on node classification, structural role classification and motif prediction to show the superior prediction performance and computational efficiency over state-of-the-art methods.  In particular, DeepWalk-based H2 NT achieves 24% improvement in terms of precision on motif prediction, while reducing 46% computational time compared to the original DeepWalk.",
-              "language": "en"
-            },
-            "recencyScore": 0.2,
-            "citationVelocity": 0,
-            "identifiers": {
-              "arxivId": "2012.11400v2"
-            },
-            "dataQuality": {
-              "completeness": 100,
-              "accuracy": 100,
-              "consistency": 100,
-              "timeliness": 60,
-              "overall": 96,
-              "missingFields": [
-                "doi",
-                "journal",
-                "citationCount",
-                "keywords"
-              ],
-              "verifiedFields": [
-                "id",
-                "title",
-                "authors",
-                "publishedDate",
-                "source",
-                "abstract"
-              ],
-              "dataSource": "arxiv",
-              "lastValidated": "2025-11-14T07:29:40.765Z"
-            }
-          },
-          "citations": {
-            "bibtex": "@article{Ge2020,\n  title = {Unifying Homophily and Heterophily Network Transformation via Motifs},\n  author = {Yan Ge and Jun Ma and Li Zhang and Haiping Lu},\n  year = {2020}\n}",
-            "apa": "Ge, Y., Ma, J., Zhang, L., & Lu, H. (2020). Unifying Homophily and Heterophily Network Transformation via Motifs.",
-            "mla": "Ge, Yan, et al. \"Unifying Homophily and Heterophily Network Transformation via Motifs.\"",
-            "chicago": "Ge, Yan, et al. \"Unifying Homophily and Heterophily Network Transformation via Motifs.\"",
-            "ieee": "Y. Ge et al., \"Unifying Homophily and Heterophily Network Transformation via Motifs,\"",
-            "harvard": "Ge, Y. et al. 2020, 'Unifying Homophily and Heterophily Network Transformation via Motifs'"
-          }
-        },
-        {
-          "id": "2012.10151v2",
-          "source": "arxiv",
-          "title": "Structural Balance and Interpersonal Appraisals Dynamics: Beyond All-to-All and Two-Faction Networks",
-          "abstract": "Structural balance theory describes stable configurations of topologies of signed interpersonal appraisal networks. Existing models explaining the convergence of appraisal networks to structural balance either diverge in finite time, or could get stuck in jammed states, or converge to only complete graphs. In this paper, we study the open problem how steady non-all-to-all structural balance emerges via local dynamics of interpersonal appraisals. We first compare two well-justified definitions of structural balance for general non-all-to-all graphs, i.e., the triad-wise structural balance and the two-faction structural balance, and thoroughly study their relations. Secondly, based on three widely adopted sociological mechanisms: the symmetry mechanism, the influence mechanism, and the homophily mechanism, we propose two simple models of gossip-like appraisal dynamics, the symmetry-influence-homophily (SIH) dynamics and the symmetry-influence-opinion-homophily (SIOH) dynamics. In these models, the appraisal network starting from any initial condition almost surely achieves non-all-to-all triad-wise and two-faction structural balance in finite time respectively. Moreover, the SIOH dynamics capture the co-evolution of interpersonal appraisals and individuals' opinions. Regarding the theoretical contributions, we show that the equilibrium set of the SIH (SIOH resp.) dynamics corresponds to the set of all the possible triad-wise (two-faction resp.) structural balance configurations of the appraisal networks. Moreover, we prove that, for any initial condition, the appraisal networks in the SIH (SIOH resp.) dynamics almost surely achieve triad-wise (two-faction resp.) structural balance in finite time. Numerical studies of the SIH dynamics also imply some insightful take-home messages on whether multilateral relations reduce or exacerbate conflicts.",
-          "authors": [
-            {
-              "name": "Wenjun Mei"
-            },
-            {
-              "name": "Ge Chen"
-            },
-            {
-              "name": "Noah E. Friedkin"
-            },
-            {
-              "name": "Florian Dörfler"
-            }
-          ],
-          "publishedDate": "2020-12-18T10:28:15.000Z",
-          "updatedDate": "2020-12-24T01:18:38.000Z",
-          "categories": [
-            "cs.SI",
-            "cs.DM",
-            "eess.SY"
-          ],
-          "urls": {},
-          "fullTextAvailable": false,
-          "metadata": {},
-          "enhancedMetadata": {
-            "impactScore": 100,
-            "influenceLevel": "very_high",
-            "isHighlyCited": false,
-            "isHotPaper": false,
-            "fullTextDetails": {
-              "available": false,
-              "urls": [],
-              "accessType": "open",
-              "verifiedAt": "2025-11-14T07:29:40.765Z",
-              "downloadable": false
-            },
-            "publicationYear": 2020,
-            "publicationMonth": 12,
-            "publicationQuarter": 4,
-            "authorCount": 4,
-            "hasCorrespondingAuthor": false,
-            "authorReputationScore": 10,
-            "platformAuthority": {
-              "score": 85,
-              "level": "high",
-              "factors": [
-                {
-                  "name": "预印本权威性",
-                  "score": 80,
-                  "description": "计算机科学和物理学领域权威预印本平台"
-                },
-                {
-                  "name": "审核机制",
-                  "score": 70,
-                  "description": "基础审核但无同行评审"
-                },
-                {
-                  "name": "更新频率",
-                  "score": 95,
-                  "description": "每日更新，时效性强"
-                }
-              ]
-            },
-            "summary": {
-              "keyPoints": [
-                "Structural Balance and Interpersonal Appraisals Dynamics",
-                "Structural balance theory describes stable configurations of topologies of signed interpersonal appraisal networks",
-                "Existing models explaining the convergence of appraisal networks to structural balance either diverge in finite time, or could get stuck in jammed states, or converge to only complete graphs",
-                "In this paper, we study the open problem how steady non-all-to-all structural balance emerges via local dynamics of interpersonal appraisals"
-              ],
-              "contributions": [
-                "propose two simple models of gossip-like appraisal dynamics, the symmetry-influence-homophily (SIH) dynamics and the symmetry-influence-opinion-homophily (SIOH) dynamics"
-              ],
-              "mainResults": [
-                "we show that the equilibrium set of the SIH (SIOH resp"
-              ],
-              "confidence": 0.7,
-              "methodology": "based on three widely adopted sociological mechanisms: the symmetry mechanism, the influence mechanism, and the homophily mechanism, we propose two simple models of gossip-like appraisal dynamics, the symmetry-influence-homophily (SIH) dynamics and the symmetry-influence-opinion-homophily (SIOH) dynamics",
-              "generated": "Structural balance theory describes stable configurations of topologies of signed interpersonal appraisal networks. ) structural balance in finite time.  Numerical studies of the SIH dynamics also imply some insightful take-home messages on whether multilateral relations reduce or exacerbate conflicts.",
-              "language": "en"
-            },
-            "recencyScore": 0.2,
-            "citationVelocity": 0,
-            "identifiers": {
-              "arxivId": "2012.10151v2"
-            },
-            "dataQuality": {
-              "completeness": 100,
-              "accuracy": 100,
-              "consistency": 100,
-              "timeliness": 60,
-              "overall": 96,
-              "missingFields": [
-                "doi",
-                "journal",
-                "citationCount",
-                "keywords"
-              ],
-              "verifiedFields": [
-                "id",
-                "title",
-                "authors",
-                "publishedDate",
-                "source",
-                "abstract"
-              ],
-              "dataSource": "arxiv",
-              "lastValidated": "2025-11-14T07:29:40.765Z"
-            }
-          },
-          "citations": {
-            "bibtex": "@article{Mei2020,\n  title = {Structural Balance and Interpersonal Appraisals Dynamics: Beyond All-to-All and Two-Faction Networks},\n  author = {Wenjun Mei and Ge Chen and Noah E. Friedkin and Florian Dörfler},\n  year = {2020}\n}",
-            "apa": "Mei, W., Chen, G., Friedkin, N. E., & Dörfler, F. (2020). Structural Balance and Interpersonal Appraisals Dynamics: Beyond All-to-All and Two-Faction Networks.",
-            "mla": "Mei, Wenjun, et al. \"Structural Balance and Interpersonal Appraisals Dynamics: Beyond All-to-All and Two-Faction Networks.\"",
-            "chicago": "Mei, Wenjun, et al. \"Structural Balance and Interpersonal Appraisals Dynamics: Beyond All-to-All and Two-Faction Networks.\"",
-            "ieee": "W. Mei et al., \"Structural Balance and Interpersonal Appraisals Dynamics: Beyond All-to-All and Two-Faction Networks,\"",
-            "harvard": "Mei, W. et al. 2020, 'Structural Balance and Interpersonal Appraisals Dynamics: Beyond All-to-All and Two-Faction Networks'"
-          }
+          "impactScore": 100,
+          "influenceLevel": "very_high"
         }
       ],
       "source": "arxiv",
       "category": "cs",
-      "count": 5,
-      "originalCount": 5,
-      "processedCount": 5,
+      "count": 3,
+      "originalCount": 3,
+      "processedCount": 3,
       "cached": false,
-      "cacheKey": "fetch_latest:arxiv:cs:5:false:true",
-      "summaryMode": false,
+      "cacheKey": "fetch_latest:arxiv:cs:3:true:true",
+      "summaryMode": true,
       "enhancementEnabled": true,
-      "message": "✨ Papers enhanced with impact analysis and smart summaries"
+      "message": "📊 Summary mode enabled: Reduced data size by 88.8% (15016 → 1678 bytes)\n✨ Enhanced with impact scores and influence levels"
     },
-    "expiresAt": 1763107180765,
-    "createdAt": 1763105380765
+    "expiresAt": 1763116060064,
+    "createdAt": 1763114260064
+  },
+  "fetch_latest:arxiv:cs.LG:2:true:true": {
+    "data": {
+      "papers": [
+        {
+          "id": "2012.11510v1",
+          "title": "Design Rule Checking with a CNN Based Feature Extractor",
+          "authors": [
+            {
+              "name": "Luis Francisco"
+            },
+            {
+              "name": "Tanmay Lagare"
+            },
+            {
+              "name": "Arpit Jain"
+            }
+          ],
+          "publishedDate": "2020-12-21T17:26:31.000Z",
+          "source": "arxiv",
+          "abstract": "Design rule checking (DRC) is getting increasingly complex in advanced nodes technologies. It would be highly desirable to have a fast interactive DRC engine that could be used during layout. In this ...",
+          "fullTextAvailable": false,
+          "impactScore": 100,
+          "influenceLevel": "very_high"
+        },
+        {
+          "id": "2012.11638v1",
+          "title": "Unsupervised in-distribution anomaly detection of new physics through conditional density estimation",
+          "authors": [
+            {
+              "name": "George Stein"
+            },
+            {
+              "name": "Uros Seljak"
+            },
+            {
+              "name": "Biwei Dai"
+            }
+          ],
+          "publishedDate": "2020-12-21T19:05:22.000Z",
+          "source": "arxiv",
+          "abstract": "Anomaly detection is a key application of machine learning, but is generally focused on the detection of outlying samples in the low probability density regions of data. Here we instead present and mo...",
+          "fullTextAvailable": false,
+          "impactScore": 100,
+          "influenceLevel": "very_high"
+        }
+      ],
+      "source": "arxiv",
+      "category": "cs.LG",
+      "count": 2,
+      "originalCount": 2,
+      "processedCount": 2,
+      "cached": false,
+      "cacheKey": "fetch_latest:arxiv:cs.LG:2:true:true",
+      "summaryMode": true,
+      "enhancementEnabled": true,
+      "message": "📊 Summary mode enabled: Reduced data size by 87.1% (8439 → 1087 bytes)\n✨ Enhanced with impact scores and influence levels"
+    },
+    "expiresAt": 1763116187834,
+    "createdAt": 1763114387834
   },
   "fetch_latest:arxiv:cs:3:false:true": {
     "data": {
@@ -1096,7 +459,7 @@
               "available": false,
               "urls": [],
               "accessType": "open",
-              "verifiedAt": "2025-11-14T07:43:03.296Z",
+              "verifiedAt": "2025-11-14T10:09:18.975Z",
               "downloadable": false
             },
             "publicationYear": 2020,
@@ -1170,7 +533,7 @@
                 "abstract"
               ],
               "dataSource": "arxiv",
-              "lastValidated": "2025-11-14T07:43:03.296Z"
+              "lastValidated": "2025-11-14T10:09:18.976Z"
             }
           },
           "citations": {
@@ -1240,7 +603,7 @@
               "available": false,
               "urls": [],
               "accessType": "open",
-              "verifiedAt": "2025-11-14T07:43:03.296Z",
+              "verifiedAt": "2025-11-14T10:09:18.975Z",
               "downloadable": false
             },
             "publicationYear": 2020,
@@ -1312,7 +675,7 @@
                 "abstract"
               ],
               "dataSource": "arxiv",
-              "lastValidated": "2025-11-14T07:43:03.296Z"
+              "lastValidated": "2025-11-14T10:09:18.976Z"
             }
           },
           "citations": {
@@ -1382,7 +745,7 @@
               "available": false,
               "urls": [],
               "accessType": "open",
-              "verifiedAt": "2025-11-14T07:43:03.296Z",
+              "verifiedAt": "2025-11-14T10:09:18.975Z",
               "downloadable": false
             },
             "publicationYear": 2020,
@@ -1454,7 +817,7 @@
                 "abstract"
               ],
               "dataSource": "arxiv",
-              "lastValidated": "2025-11-14T07:43:03.296Z"
+              "lastValidated": "2025-11-14T10:09:18.976Z"
             }
           },
           "citations": {
@@ -1478,7 +841,7 @@
       "enhancementEnabled": true,
       "message": "✨ Papers enhanced with impact analysis and smart summaries"
     },
-    "expiresAt": 1763107983296,
-    "createdAt": 1763106183296
+    "expiresAt": 1763116758976,
+    "createdAt": 1763114958976
   }
 }

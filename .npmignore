@@ -1,0 +1,47 @@
+# Source files
+src/
+tests/
+docs/
+scripts/
+
+# Development files
+*.tsbuildinfo
+.eslintrc.json
+.prettierrc.json
+vitest.config.ts
+tsconfig.json
+tsconfig.build.json
+
+# Git files
+.gitignore
+.gitattributes
+
+# Cache and temporary files
+cache/
+.roo/
+*.log
+*.cache
+
+# Environment files
+.env.example
+.env.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+
+# Package files (already included in dist)
+*.tgz
+*.tar.gz
+
+# Source maps are included for better debugging experience
+# *.map

@@ -42,9 +42,6 @@ export class MCPServer {
     this.resourceRegistry = new ResourceRegistry(this.server);
     this.promptRegistry = new PromptRegistry(this.server);
     
-    // 注册所有组件
-    this.setupAll();
-    
     this.logger.info('MCP Server initialized with MCP 1.22 features');
   }
   
@@ -52,9 +49,11 @@ export class MCPServer {
    * 设置所有组件
    */
   private setupAll(): void {
+    this.logger.info('开始注册工具、资源和提示词...');
     this.toolRegistry.registerAll();
     this.resourceRegistry.registerAll();
     this.promptRegistry.registerAll();
+    this.logger.info('所有组件注册完成');
   }
   
   /**
@@ -85,22 +84,25 @@ export class MCPServer {
     try {
       // 初始化驱动
       initializeDrivers();
-      this.logger.info('Drivers initialized');
+      this.logger.info('驱动已初始化');
+      
+      // 注册所有组件（必须在连接前完成）
+      this.setupAll();
       
       // 使用stdio传输启动服务器
       const transport = new StdioServerTransport();
       await this.server.connect(transport);
       
-      this.logger.info('MCP Server started with MCP 1.22 features:');
-      this.logger.info('✓ McpServer class');
-      this.logger.info('✓ Resources support');
-      this.logger.info('✓ Prompts support');
-      this.logger.info('✓ Notification debouncing');
-      this.logger.info('✓ Dynamic tool management');
-      this.logger.info('✓ Display names and metadata');
-      this.logger.info('✓ Parameter completions');
+      this.logger.info('MCP Server 已启动，功能特性:');
+      this.logger.info('✓ McpServer 类支持');
+      this.logger.info('✓ Resources 资源支持');
+      this.logger.info('✓ Prompts 提示词支持');
+      this.logger.info('✓ 通知去抖动');
+      this.logger.info('✓ 动态工具管理');
+      this.logger.info('✓ 显示名称和元数据');
+      this.logger.info('✓ 参数自动补全');
     } catch (error) {
-      this.logger.error('Failed to start MCP server', {
+      this.logger.error('启动MCP服务器失败', {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined
       });
