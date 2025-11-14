@@ -1,0 +1,1 @@
+{"mcpServers":{"aigroup-paper-mcp":{"command":"node","args":["dist/server.js"],"env":{"NODE_ENV":"production"},"description":"A unified academic paper search and retrieval MCP server integrating 11+ academic platforms","alwaysAllow":["fetch_paper","fetch_latest","list_categories","advanced_search","search_papers","trend_analysis"],"disabled":false,"timeout":300}}}

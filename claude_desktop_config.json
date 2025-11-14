@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "aigroup-paper-mcp": {
+      "command": "node",
+      "args": [
+        "D:/aigroup-paper-mcp/dist/server.js"
+      ],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}

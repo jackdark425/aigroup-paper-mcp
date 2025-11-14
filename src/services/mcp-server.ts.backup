@@ -1,0 +1,708 @@
+
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { z } from 'zod';
+import { completable } from '@modelcontextprotocol/sdk/server/completable.js';
+import { Logger } from '../core/logger.js';
+import { config } from '../config/index.js';
+import { initializeDrivers } from '../drivers/index.js';
+import { searchPapers, fetchPaper, fetchLatest, listCategories, advancedSearch, analyzeTrends } from '../tools/index.js';
+import { PlatformSource, SearchField, SortField, SortOrder } from '../types/index.js';
+
+export class MCPServer {
+  private server: McpServer;
+  private logger: Logger;
+  
+  // 动态工具管理
+  private toolHandles: Map<string, any> = new Map();
+  
+  constructor() {
+    this.logger = new Logger('MCPServer');
+    
+    // 使用McpServer类，启用通知去抖动
+    this.server = new McpServer(
+      {
+        name: config.server.name,
+        version: config.server.version
+      },
+      {
+        // 启用通知去抖动以提高网络效率
+        debouncedNotificationMethods: [
+          'notifications/tools/list_changed',
+          'notifications/resources/list_changed',
+          'notifications/prompts/list_changed'
+        ]
+      }
+    );
+    
+    this.setupTools();
+    this.setupResources();
+    this.setupPrompts();
+    this.logger.info('MCP Server initialized with MCP 1.22 features');
+  }
+  
+  private setupTools(): void {
+    // 搜索论文工具 - 带显示名称和参数完成
+    const searchTool = this.server.registerTool(
+      'search_papers',
+      {
+        title: '学术论文搜索', // 显示名称
+        description: '跨多个学术平台搜索论文（arXiv、OpenAlex等）。支持多字段搜索、过滤和排序。',
+        inputSchema: {
+          query: z.string().describe('搜索查询关键词。系统会自动优化和纠正拼写错误。'),
+          sources: z.array(z.nativeEnum(PlatformSource)).optional().describe('要搜索的特定平台。'),
+          field: completable(
+            z.nativeEnum(SearchField).optional(),
+            (value) => {
+              // 参数完成功能
+              const fields = Object.values(SearchField);
+              return Promise.resolve(
+                fields.filter(f => f.toLowerCase().startsWith((value || '').toLowerCase()))
+              );
+            }
+          ).describe('搜索字段：全部、标题、摘要、作者、关键词、全文。'),
+          categories: z.array(z.string()).optional().describe('按类别/主题过滤。'),
+          sortBy: z.nativeEnum(SortField).optional().describe('排序字段'),
+          sortOrder: z.nativeEnum(SortOrder).optional().describe('排序顺序'),
+          limit: z.number().optional().describe('每个平台的最大结果数（默认：10，最大：100）'),
+          offset: z.number().optional().describe('分页偏移量（默认：0）')
+        },
+        outputSchema: {
+          results: z.array(z.object({
+            id: z.string(),
+            title: z.string(),
+            authors: z.array(z.string()),
+            abstract: z.string().optional(),
+            published: z.string().optional(),
+            source: z.string(),
+            citations: z.number().optional(),
+            url: z.string().optional()
+          })),
+          total: z.number(),
+          sources: z.array(z.string())
+        }
+      },
+      async (args) => {
+        try {
+          const toolArgs = {
+            query: args.query,
+            sources: args.sources,
+            field: args.field,
+            categories: args.categories,
+            sortBy: args.sortBy,
+            sortOrder: args.sortOrder,
+            limit: args.limit || 10,
+            offset: args.offset || 0,
+            enableSmartSuggestions: true,
+            enableEnhancement: true,
+            enableSearchStrategy: true
+          };
+          
+          const result = await searchPapers(toolArgs);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ],
+            structuredContent: result as any
+          };
+        } catch (error: any) {
+          this.logger.error(`Search papers failed: ${error.message}`);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+    this.toolHandles.set('search_papers', searchTool);
+
+    // 获取论文详情工具
+    const fetchTool = this.server.registerTool(
+      'fetch_paper',
+      {
+        title: '获取论文详情',
+        description: '从指定平台根据ID获取论文的详细信息。返回完整的元数据。',
+        inputSchema: {
+          id: z.string().describe('平台特定格式的论文ID'),
+          source: z.nativeEnum(PlatformSource).describe('论文所在平台源')
+        },
+        outputSchema: {
+          paper: z.object({
+            id: z.string(),
+            title: z.string(),
+            authors: z.array(z.string()),
+            abstract: z.string().optional(),
+            published: z.string().optional(),
+            source: z.string(),
+            citations: z.number().optional(),
+            url: z.string().optional()
+          })
+        }
+      },
+      async (args) => {
+        try {
+          const result = await fetchPaper(args);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ],
+            structuredContent: result as any
+          };
+        } catch (error: any) {
+          this.logger.error(`Fetch paper failed: ${error.message}`);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+    this.toolHandles.set('fetch_paper', fetchTool);
+
+    // 获取最新论文工具
+    const latestTool = this.server.registerTool(
+      'fetch_latest',
+      {
+        title: '获取最新论文',
+        description: '从特定类别的平台获取最新论文。具有智能缓存和摘要模式功能。',
+        inputSchema: {
+          source: z.nativeEnum(PlatformSource).describe('要获取的平台源'),
+          category: completable(
+            z.string(),
+            async (value, context) => {
+              // 上下文感知的参数完成
+              if (context?.arguments?.source) {
+                const source = context.arguments.source as PlatformSource;
+                // 这里可以根据source返回相关的类别建议
+                const categories = await this.getCategoriesForSource(source);
+                return categories.filter(c => c.toLowerCase().includes(value.toLowerCase()));
+              }
+              return [];
+            }
+          ).describe('要获取的类别/主题'),
+          limit: z.number().optional().describe('要获取的最大论文数（默认：10，最大：50）'),
+          useCache: z.boolean().optional().describe('是否使用缓存（默认：true）'),
+          summaryOnly: z.boolean().optional().describe('仅返回摘要信息'),
+          enableEnhancement: z.boolean().optional().describe('启用结果增强（默认：true）')
+        },
+        outputSchema: {
+          papers: z.array(z.object({
+            id: z.string(),
+            title: z.string(),
+            authors: z.array(z.string()),
+            abstract: z.string().optional(),
+            published: z.string().optional(),
+            source: z.string()
+          })),
+          total: z.number(),
+          category: z.string()
+        }
+      },
+      async (args) => {
+        try {
+          const toolArgs = {
+            source: args.source,
+            category: args.category,
+            limit: args.limit || 10,
+            useCache: args.useCache ?? true,
+            summaryOnly: args.summaryOnly ?? false,
+            enableEnhancement: args.enableEnhancement ?? true,
+            saveToFile: false
+          };
+          
+          const result = await fetchLatest(toolArgs);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ],
+            structuredContent: result as any
+          };
+        } catch (error: any) {
+          this.logger.error(`Fetch latest failed: ${error.message}`);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+    this.toolHandles.set('fetch_latest', latestTool);
+
+    // 列出类别工具
+    const categoriesTool = this.server.registerTool(
+      'list_categories',
+      {
+        title: '列出平台类别',
+        description: '列出一个或所有平台的可用类别/主题。',
+        inputSchema: {
+          source: z.nativeEnum(PlatformSource).optional().describe('平台源（留空则列出所有平台的类别）')
+        },
+        outputSchema: {
+          categories: z.array(z.object({
+            source: z.string(),
+            category: z.string(),
+            description: z.string().optional(),
+            paperCount: z.number().optional()
+          }))
+        }
+      },
+      async (args) => {
+        try {
+          const result = await listCategories(args);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ],
+            structuredContent: result as any
+          };
+        } catch (error: any) {
+          this.logger.error(`List categories failed: ${error.message}`);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+    this.toolHandles.set('list_categories', categoriesTool);
+
+    // 高级搜索工具
+    const advancedTool = this.server.registerTool(
+      'advanced_search',
+      {
+        title: '高级搜索',
+        description: '具有布尔运算符（AND、OR、NOT）、模糊匹配和精确匹配功能的高级搜索。',
+        inputSchema: {
+          query: z.string().describe('带有布尔运算符的搜索查询'),
+          sources: z.array(z.nativeEnum(PlatformSource)).optional().describe('要搜索的特定平台'),
+          field: z.nativeEnum(SearchField).optional().describe('搜索字段'),
+          fuzzyMatch: z.boolean().optional().describe('启用模糊匹配（默认：false）'),
+          exactMatch: z.boolean().optional().describe('启用精确匹配（默认：false）'),
+          limit: z.number().optional().describe('每个平台的最大结果数（默认：10）'),
+          offset: z.number().optional().describe('分页偏移量（默认：0）')
+        },
+        outputSchema: {
+          results: z.array(z.object({
+            id: z.string(),
+            title: z.string(),
+            authors: z.array(z.string()),
+            relevance: z.number().optional()
+          })),
+          total: z.number()
+        }
+      },
+      async (args) => {
+        try {
+          const toolArgs = {
+            query: args.query,
+            sources: args.sources,
+            field: args.field,
+            fuzzyMatch: args.fuzzyMatch ?? false,
+            exactMatch: args.exactMatch ?? false,
+            caseSensitive: false,
+            limit: args.limit || 10,
+            offset: args.offset || 0
+          };
+          
+          const result = await advancedSearch(toolArgs);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ],
+            structuredContent: result as any
+          };
+        } catch (error: any) {
+          this.logger.error(`Advanced search failed: ${error.message}`);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+    this.toolHandles.set('advanced_search', advancedTool);
+
+    // 趋势分析工具
+    const trendTool = this.server.registerTool(
+      'trend_analysis',
+      {
+        title: '研究趋势分析',
+        description: '分析特定主题随时间的变化趋势，包括增长率、高峰期和关键词分析。',
+        inputSchema: {
+          topic: z.string().describe('要分析趋势的主题'),
+          sources: z.array(z.nativeEnum(PlatformSource)).optional().describe('要分析的平台源'),
+          period: z.enum(['week', 'month', 'year', 'all']).optional().describe('分析时间段'),
+          granularity: z.enum(['day', 'week', 'month']).optional().describe('时间粒度'),
+          limit: z.number().optional().describe('每个时间段要分析的最大论文数')
+        },
+        outputSchema: {
+          trends: z.array(z.object({
+            period: z.string(),
+            paperCount: z.number(),
+            growthRate: z.number().optional(),
+            topKeywords: z.array(z.string())
+          })),
+          topic: z.string(),
+          totalPapers: z.number()
+        }
+      },
+      async (args) => {
+        try {
+          const toolArgs = {
+            topic: args.topic,
+            sources: args.sources,
+            period: args.period || 'year',
+            granularity: args.granularity || 'month',
+            limit: args.limit || 100,
+            useCache: true,
+            timeout: 45000
+          };
+          
+          const result = await analyzeTrends(toolArgs);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ],
+            structuredContent: result as any
+          };
+        } catch (error: any) {
+          this.logger.error(`Trend analysis failed: ${error.message}`);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+    this.toolHandles.set('trend_analysis', trendTool);
+  }
+
+  private setupResources(): void {
+    // 论文资源模板
+    this.server.registerResource(
+      'paper',
+      new ResourceTemplate('paper://{source}/{id}', { list: undefined }),
+      {
+        title: '学术论文',
+        description: '来自各种学术平台的论文内容和元数据'
+      },
+      async (uri, { source, id }) => {
+        try {
+          const paper = await fetchPaper({ 
+            source: source as PlatformSource, 
+            id: id as string 
+          });
+          return {
+            contents: [
+              {
+                uri: uri.href,
+                text: JSON.stringify(paper, null, 2),
+                mimeType: 'application/json'
+              }
+            ]
+          };
+        } catch (error: any) {
+          this.logger.error(`Resource fetch failed: ${error.message}`);
+          throw error;
+        }
+      }
+    );
+
+    // 类别资源模板
+    this.server.registerResource(
+      'category',
+      new ResourceTemplate('category://{source}/{category}', { list: undefined }),
+      {
+        title: '论文类别',
+        description: '特定平台和类别的论文列表'
+      },
+      async (uri, { source, category }) => {
+        try {
+          const papers = await fetchLatest({ 
+            source: source as PlatformSource, 
+            category: category as string, 
+            limit: 20,
+            useCache: true,
+            enableEnhancement: true,
+            saveToFile: false
+          });
+          return {
+            contents: [
+              {
+                uri: uri.href,
+                text: JSON.stringify(papers, null, 2),
+                mimeType: 'application/json'
+              }
+            ]
+          };
+        } catch (error: any) {
+          this.logger.error(`Category resource fetch failed: ${error.message}`);
+          throw error;
+        }
+      }
+    );
+
+    // 搜索结果资源
+    this.server.registerResource(
+      'search',
+      new ResourceTemplate('search://{query}', { list: undefined }),
+      {
+        title: '搜索结果',
+        description: '特定查询的学术论文搜索结果'
+      },
+      async (uri, { query }) => {
+        try {
+          const results = await searchPapers({
+            query: query as string,
+            limit: 20,
+            enableSmartSuggestions: true,
+            enableEnhancement: true,
+            enableSearchStrategy: true
+          });
+          return {
+            contents: [
+              {
+                uri: uri.href,
+                text: JSON.stringify(results, null, 2),
+                mimeType: 'application/json'
+              }
+            ]
+          };
+        } catch (error: any) {
+          this.logger.error(`Search resource failed: ${error.message}`);
+          throw error;
+        }
+      }
+    );
+  }
+
+  private setupPrompts(): void {
+    // 文献综述提示
+    this.server.registerPrompt(
+      'literature_review',
+      {
+        title: '文献综述助手',
+        description: '为特定研究主题生成全面的文献综述',
+        argsSchema: {
+          topic: completable(z.string(), (value) => {
+            const suggestions = [
+              'machine learning', 'deep learning', 'artificial intelligence',
+              'natural language processing', 'computer vision', 'reinforcement learning',
+              'neural networks', 'transformer models', 'large language models',
+              'quantum computing', 'bioinformatics', 'climate science'
+            ];
+            return Promise.resolve(suggestions.filter(s => s.startsWith(value.toLowerCase())));
+          }),
+          timeframe: completable(
+            z.enum(['recent', 'past_year', 'past_5_years', 'all_time']),
+            (value) => {
+              const options = ['recent', 'past_year', 'past_5_years', 'all_time'] as const;
+              return Promise.resolve(options.filter(t => t.startsWith(value)));
+            }
+          )
+        }
+      },
+      ({ topic, timeframe }) => ({
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: `请为研究主题"${topic}"生成一个全面的文献综述。请包括：
+1. 该领域的关键发展和里程碑
+2. 主要研究方向和子领域
+3. 有影响力的论文和作者
+4. 当前的研究趋势和挑战
+5. 未来发展方向
+
+时间范围：${timeframe}`
+            }
+          }
+        ]
+      })
+    );
+
+    // 研究差距分析提示
+    this.server.registerPrompt(
+      'research_gap_analysis',
+      {
+        title: '研究差距分析',
+        description: '分析特定研究领域中的研究差距和机会',
+        argsSchema: {
+) => {
+            const domains = [
+              'computer science', 'biology', 'physics', 'chemistry',
+              'medicine', 'engineering', 'mathematics', 'economics'
+            ];
+            return Promise.resolve(domains.filter(d => d.startsWith(value.toLowerCase())));
+          }),
+          subtopic: z.string().describe('要分析的具体子主题或技术')
+        }
+      },
+      ({ domain, subtopic }) => ({
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: `请分析在${domain}领域中，关于"${subtopic}"的研究差距和机会。请识别：
+1. 现有研究的局限性
+2. 尚未充分探索的方向
+3. 方法论上的改进机会
+4. 跨学科合作的可能性
+5. 实际应用中的挑战`
+            }
+          }
+        ]
+      })
+    );
+
+    // 论文比较分析提示
+    this.server.registerPrompt(
+      'paper_comparison',
+      {
+        title: '论文比较分析',
+        description: '比较和分析多篇相关论文',
+        argsSchema: {
+          paperIds: z.string().describe('要比较的论文ID列表（逗号分隔）'),
+          aspect: completable(
+            z.enum(['methodology', 'results', 'impact', 'novelty', 'comprehensive']),
+            (value) => {
+              const aspects = ['methodology', 'results', 'impact', 'novelty', 'comprehensive'] as const;
+              return Promise.resolve(aspects.filter(a => a.startsWith(value)));
+            }
+          ).describe('比较的侧重点')
+        }
+      },
+      ({ paperIds, aspect }) => ({
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: `请比较以下论文（${paperIds}），侧重点：${aspect}。
+请提供：
+1. 各论文的核心贡献
+2. 方法论的异同
+3. 结果的对比
+4. 优缺点分析
+5. 应用场景的差异`
+            }
+          }
+        ]
+      })
+    );
+  }
+
+  // 动态工具管理示例方法
+  public enableTool(toolName: string): void {
+    const tool = this.toolHandles.get(toolName);
+    if (tool) {
+      tool.enable();
+      this.logger.info(`Tool enabled: ${toolName}`);
+    }
+  }
+
+  public disableTool(toolName: string): void {
+    const tool = this.toolHandles.get(toolName);
+    if (tool) {
+      tool.disable();
+      this.logger.info(`Tool disabled: ${toolName}`);
+    }
+  }
+
+  public removeTool(toolName: string): void {
+    const tool = this.toolHandles.get(toolName);
+    if (tool) {
+      tool.remove();
+      this.toolHandles.delete(toolName);
+      this.logger.info(`Tool removed: ${toolName}`);
+    }
+  }
+
+  // 辅助方法：获取平台的类别
+  private async getCategoriesForSource(source: PlatformSource): Promise<string[]> {
+    try {
+      const result = await listCategories({ source });
+      return result.platforms[0]?.categories.map((c: any) => c.category) || [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  async start(): Promise<void> {
+    try {
+      // 初始化驱动
+      initializeDrivers();
+      this.logger.info('Drivers initialized');
+      
+      // 使用stdio传输启动服务器
+      const transport = new StdioServerTransport();
+      await this.server.connect(transport);
+      
+      this.logger.info('MCP Server started with MCP 1.22 features:');
+      this.logger.info('✓ McpServer class');
+      this.logger.info('✓ Resources support');
+      this.logger.info('✓ Prompts support');
+      this.logger.info('✓ Notification debouncing');
+      this.logger.info('✓ Dynamic tool management');
+      this.logger.info('✓ Display names and metadata');
+      this.logger.info('✓ Parameter completions');
+    } catch (error) {
+      this.logger.error('Failed to start MCP server', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      throw error;
+    }
+  }
+}
+          domain: completable(z.string(), (value
