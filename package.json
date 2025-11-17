@@ -1,6 +1,6 @@
 {
   "name": "aigroup-paper-mcp",
-  "version": "0.2.7",
+  "version": "0.3.0",
   "description": "A unified academic paper search and retrieval MCP server integrating 11+ academic platforms",
   "type": "module",
   "main": "dist/index.js",

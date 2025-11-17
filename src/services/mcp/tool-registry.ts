@@ -2,7 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { completable } from '@modelcontextprotocol/sdk/server/completable.js';
 import { Logger } from '../../core/logger.js';
-import { searchPapers, fetchPaper, fetchLatest, listCategories, advancedSearch, analyzeTrends } from '../../tools/index.js';
+import { searchPapers, fetchPaper, fetchLatest, listCategories, advancedSearch, analyzeTrends, manageCache, smartCacheSearch } from '../../tools/index.js';
 import { PlatformSource, SearchField, SortField, SortOrder } from '../../types/index.js';
 
 /**
@@ -27,6 +27,8 @@ export class ToolRegistry {
     this.registerListCategoriesTool();
     this.registerAdvancedSearchTool();
     this.registerTrendAnalysisTool();
+    this.registerCacheManagementTool();
+    this.registerSmartCacheSearchTool();
     
     this.logger.info(`已注册 ${this.toolHandles.size} 个工具`);
   }
@@ -531,6 +533,132 @@ export class ToolRegistry {
       }
     );
     this.toolHandles.set('trend_analysis', tool);
+  }
+
+  /**
+   * 注册缓存管理工具
+   */
+  private registerCacheManagementTool(): void {
+    const tool = this.server.registerTool(
+      'manage_cache',
+      {
+        title: '缓存管理',
+        description: '管理学术论文搜索的缓存系统，包括查看缓存内容、获取缓存项、清理缓存和获取统计信息。',
+        inputSchema: {
+          action: z.enum(['list', 'get', 'clear', 'stats'])
+            .describe('缓存管理操作：列出键、获取项、清理缓存、获取统计信息'),
+          key: z.string().optional()
+            .describe('要获取的缓存键（get操作时必需）'),
+          pattern: z.string().optional()
+            .describe('过滤缓存键的模式（支持通配符 *）'),
+          namespace: z.string().optional()
+            .describe('要操作的缓存命名空间')
+        },
+        outputSchema: {
+          action: z.string(),
+          message: z.string(),
+          totalKeys: z.number().optional(),
+          filteredKeys: z.number().optional(),
+          keys: z.array(z.any()).optional(),
+          data: z.any().optional(),
+          metadata: z.any().optional(),
+          totalDeleted: z.number().optional(),
+          remainingKeys: z.number().optional(),
+          totalSizeBytes: z.number().optional(),
+          totalSizeMB: z.string().optional(),
+          averageItemSize: z.number().optional(),
+          sourceDistribution: z.record(z.number()).optional()
+        }
+      },
+      async (args) => {
+        try {
+          const result = await manageCache(args);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ],
+            structuredContent: result
+          };
+        } catch (error: any) {
+          this.logger.error(`缓存管理失败: ${error.message}`);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `错误: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+    this.toolHandles.set('manage_cache', tool);
+  }
+
+  /**
+   * 注册智能缓存搜索工具
+   */
+  private registerSmartCacheSearchTool(): void {
+    const tool = this.server.registerTool(
+      'smart_cache_search',
+      {
+        title: '智能缓存搜索',
+        description: '基于语义相似度在缓存中查找相关文献数据，即使查询内容不完全相同也能找到相关结果。',
+        inputSchema: {
+          query: z.string()
+            .describe('搜索查询，系统会基于语义相似度查找相关缓存'),
+          similarityThreshold: z.number().min(0).max(1).default(0.7)
+            .describe('语义相似度阈值（0-1，默认0.7）'),
+          maxResults: z.number().int().positive().max(50).default(10)
+            .describe('最大返回结果数'),
+          includeExpired: z.boolean().default(false)
+            .describe('是否包含过期缓存（默认不包含）')
+        },
+        outputSchema: {
+          action: z.string(),
+          query: z.string(),
+          totalKeys: z.number(),
+          validKeys: z.number(),
+          matchedResults: z.number(),
+          similarityThreshold: z.number(),
+          results: z.array(z.any()),
+          suggestions: z.array(z.string()),
+          message: z.string()
+        }
+      },
+      async (args) => {
+        try {
+          const result = await smartCacheSearch(args);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ],
+            structuredContent: result
+          };
+        } catch (error: any) {
+          this.logger.error(`智能缓存搜索失败: ${error.message}`);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `错误: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+    this.toolHandles.set('smart_cache_search', tool);
   }
 
   /**
