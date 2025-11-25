@@ -22,26 +22,31 @@ export async function handleSearchPapers(args: any) {
     const result = await searchPapers(toolArgs);
     
     // 映射返回值到 outputSchema 期望的结构
+    const mappedPapers = Array.isArray(result.papers) ? result.papers.map(paper => ({
+      id: paper.id || '',
+      title: paper.title || '',
+      authors: Array.isArray(paper.authors)
+        ? paper.authors.map((a: any) => typeof a === 'string' ? a : (a.name || ''))
+        : [],
+      abstract: paper.abstract || undefined,
+      published: paper.publishedDate?.toISOString?.() || paper.publishedDate || undefined,
+      source: paper.source || '',
+      citations: paper.citationCount || undefined,
+      url: paper.urls?.landing || paper.urls?.abstract || undefined
+    })) : [];
+    
     const mappedResult = {
-      results: result.papers.map(paper => ({
-        id: paper.id,
-        title: paper.title,
-        authors: paper.authors.map(a => a.name),
-        abstract: paper.abstract || undefined,
-        published: paper.publishedDate?.toISOString() || undefined,
-        source: paper.source,
-        citations: paper.citationCount || undefined,
-        url: paper.urls?.landing || paper.urls?.abstract || undefined
-      })),
-      total: result.total,
-      sources: Object.keys(result.totalBySource)
+      results: mappedPapers,
+      total: result.total || 0,
+      sources: result.totalBySource ? Object.keys(result.totalBySource) : []
     };
     
+    // content也返回映射后的结果
     return {
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify(result, null, 2)
+          text: JSON.stringify(mappedResult, null, 2)
         }
       ],
       structuredContent: mappedResult

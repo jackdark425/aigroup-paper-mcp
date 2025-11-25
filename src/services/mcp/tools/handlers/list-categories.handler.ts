@@ -9,21 +9,24 @@ export async function handleListCategories(args: any) {
     
     // 映射返回值到 outputSchema 期望的结构
     const categories: any[] = [];
-    if (result.platforms) {
+    if (result.platforms && Array.isArray(result.platforms)) {
       for (const platform of result.platforms) {
-        for (const cat of platform.categories) {
-          categories.push({
-            source: platform.source,
-            category: typeof cat === 'string' ? cat : cat.category || cat.name,
-            description: typeof cat === 'object' ? cat.description : undefined,
-            paperCount: typeof cat === 'object' ? cat.paperCount : undefined
-          });
+        if (platform.categories && Array.isArray(platform.categories)) {
+          for (const cat of platform.categories) {
+            categories.push({
+              source: platform.source,
+              category: typeof cat === 'string' ? cat : (cat.category || cat.name || ''),
+              description: typeof cat === 'object' ? cat.description : undefined,
+              paperCount: typeof cat === 'object' ? cat.paperCount : undefined
+            });
+          }
         }
       }
     }
     
+    // 确保categories不为undefined
     const mappedResult = {
-      categories
+      categories: categories.length > 0 ? categories : []
     };
     
     return {

@@ -19,14 +19,14 @@ export async function handleTrendAnalysis(args: any) {
     
     // 映射返回值到 outputSchema 期望的结构
     const mappedResult = {
-      trends: result.dataPoints.map(dp => ({
-        period: dp.period,
-        paperCount: dp.count,
-        growthRate: result.growthRate,
-        topKeywords: dp.topKeywords || []
-      })),
-      topic: result.topic,
-      totalPapers: result.totalPapers
+      trends: Array.isArray(result.dataPoints) ? result.dataPoints.map((dp: any) => ({
+        period: dp.period || '',
+        paperCount: dp.count || 0,
+        growthRate: result.growthRate || 0,
+        topKeywords: Array.isArray(dp.topKeywords) ? dp.topKeywords : []
+      })) : [],
+      topic: result.topic || args.topic || '',
+      totalPapers: result.totalPapers || 0
     };
     
     return {

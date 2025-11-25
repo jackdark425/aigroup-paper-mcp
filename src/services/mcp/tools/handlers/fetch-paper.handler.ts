@@ -8,24 +8,33 @@ export async function handleFetchPaper(args: any) {
     const paper = await fetchPaper(args);
     
     // 映射返回值到 outputSchema 期望的结构
+    const mappedPaper = paper ? {
+      id: paper.id || '',
+      title: paper.title || '',
+      authors: Array.isArray(paper.authors)
+        ? paper.authors.map((a: any) => typeof a === 'string' ? a : (a.name || ''))
+        : [],
+      abstract: paper.abstract || undefined,
+      published: paper.publishedDate?.toISOString?.() || paper.publishedDate || undefined,
+      source: paper.source || '',
+      citations: paper.citationCount || undefined,
+      url: paper.urls?.landing || paper.urls?.abstract || undefined
+    } : {
+      id: '',
+      title: '',
+      authors: [],
+      source: ''
+    };
+    
     const mappedResult = {
-      paper: {
-        id: paper.id,
-        title: paper.title,
-        authors: paper.authors.map(a => a.name),
-        abstract: paper.abstract || undefined,
-        published: paper.publishedDate?.toISOString() || undefined,
-        source: paper.source,
-        citations: paper.citationCount || undefined,
-        url: paper.urls?.landing || paper.urls?.abstract || undefined
-      }
+      paper: mappedPaper
     };
     
     return {
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify(paper, null, 2)
+          text: JSON.stringify(mappedPaper, null, 2)
         }
       ],
       structuredContent: mappedResult

@@ -21,28 +21,31 @@ export async function handleFetchLatest(args: any) {
     // 处理可能的不同返回类型（包括缓存返回）
     const papers = (result as any).papers || [];
     const count = (result as any).count || (result as any).total || 0;
-    const category = (result as any).category || args.category;
+    const category = (result as any).category || args.category || '';
+    
+    const mappedPapers = Array.isArray(papers) ? papers.map((paper: any) => ({
+      id: paper.id || '',
+      title: paper.title || '',
+      authors: Array.isArray(paper.authors)
+        ? paper.authors.map((a: any) => typeof a === 'string' ? a : (a.name || ''))
+        : [],
+      abstract: paper.abstract || undefined,
+      published: paper.publishedDate?.toISOString?.() || paper.publishedDate || undefined,
+      source: paper.source || ''
+    })) : [];
     
     const mappedResult = {
-      papers: papers.map((paper: any) => ({
-        id: paper.id,
-        title: paper.title,
-        authors: Array.isArray(paper.authors)
-          ? paper.authors.map((a: any) => typeof a === 'string' ? a : a.name)
-          : [],
-        abstract: paper.abstract || undefined,
-        published: paper.publishedDate?.toISOString?.() || paper.publishedDate || undefined,
-        source: paper.source
-      })),
+      papers: mappedPapers,
       total: count,
       category: category
     };
     
+    // content也返回映射后的结果
     return {
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify(result, null, 2)
+          text: JSON.stringify(mappedResult, null, 2)
         }
       ],
       structuredContent: mappedResult

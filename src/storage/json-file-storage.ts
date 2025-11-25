@@ -177,6 +177,24 @@ export class JsonFileStorage implements StorageInterface {
     return item.data;
   }
 
+  /**
+   * 获取完整的缓存项（包含元数据）
+   */
+  async getItem<T>(key: string): Promise<CacheItem<T> | null> {
+    const item = this.data.get(key);
+    
+    if (!item) {
+      return null;
+    }
+
+    if (item.expiresAt <= Date.now()) {
+      await this.delete(key);
+      return null;
+    }
+
+    return item;
+  }
+
   async delete(key: string): Promise<void> {
     this.data.delete(key);
     await this.saveToFile();

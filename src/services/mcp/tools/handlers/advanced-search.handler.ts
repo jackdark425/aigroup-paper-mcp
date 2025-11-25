@@ -20,13 +20,15 @@ export async function handleAdvancedSearch(args: any) {
     
     // 映射返回值到 outputSchema 期望的结构
     const mappedResult = {
-      results: result.papers.map((paper: any) => ({
-        id: paper.id,
-        title: paper.title,
-        authors: paper.authors.map((a: any) => a.name || a),
+      results: Array.isArray(result.papers) ? result.papers.map((paper: any) => ({
+        id: paper.id || '',
+        title: paper.title || '',
+        authors: Array.isArray(paper.authors)
+          ? paper.authors.map((a: any) => typeof a === 'string' ? a : (a.name || ''))
+          : [],
         relevance: paper.enhancedMetadata?.impactScore || undefined
-      })),
-      total: result.total
+      })) : [],
+      total: result.total || 0
     };
     
     return {

@@ -75,13 +75,30 @@ async function listCacheKeys(cacheStorage: any, pattern?: string): Promise<any> 
   // 获取每个键的详细信息
   const keysWithInfo = await Promise.all(
     filteredKeys.map(async (key: string) => {
-      const item = await cacheStorage.get(key);
+      // 使用getItem获取完整的CacheItem（如果可用）
+      const item = typeof cacheStorage.getItem === 'function'
+        ? await cacheStorage.getItem(key)
+        : null;
+      
+      if (!item) {
+        // 回退到get方法，但这只会返回数据
+        const data = await cacheStorage.get(key);
+        return {
+          key,
+          size: data ? JSON.stringify(data).length : 0,
+          expiresAt: null,
+          createdAt: null,
+          isExpired: false
+        };
+      }
+      
+      // item是完整的CacheItem对象
       return {
         key,
-        size: item ? JSON.stringify(item).length : 0,
-        expiresAt: item?.expiresAt ? new Date(item.expiresAt).toISOString() : null,
-        createdAt: item?.createdAt ? new Date(item.createdAt).toISOString() : null,
-        isExpired: item?.expiresAt ? Date.now() > item.expiresAt : false
+        size: item.data ? JSON.stringify(item.data).length : 0,
+        expiresAt: item.expiresAt ? new Date(item.expiresAt).toISOString() : null,
+        createdAt: item.createdAt ? new Date(item.createdAt).toISOString() : null,
+        isExpired: item.expiresAt ? Date.now() > item.expiresAt : false
       };
     })
   );
@@ -100,14 +117,32 @@ async function listCacheKeys(cacheStorage: any, pattern?: string): Promise<any> 
  * 获取缓存项
  */
 async function getCacheItem(cacheStorage: any, key: string): Promise<any> {
-  const item = await cacheStorage.get(key);
+  // 尝试使用getItem获取完整对象
+  const item = typeof cacheStorage.getItem === 'function'
+    ? await cacheStorage.getItem(key)
+    : null;
   
   if (!item) {
+    // 回退到get方法
+    const data = await cacheStorage.get(key);
+    if (!data) {
+      return {
+        action: 'get',
+        key,
+        found: false,
+        message: `Cache key "${key}" not found or expired`
+      };
+    }
+    
     return {
       action: 'get',
       key,
-      found: false,
-      message: `Cache key "${key}" not found or expired`
+      found: true,
+      data: data,
+      metadata: {
+        size: JSON.stringify(data).length
+      },
+      message: `Retrieved cache item "${key}" (metadata unavailable)`
     };
   }
   
@@ -158,16 +193,47 @@ async function clearCache(cacheStorage: any, pattern?: string): Promise<any> {
 async function getCacheStats(cacheStorage: any): Promise<any> {
   const allKeys = await cacheStorage.keys();
   
+  if (allKeys.length === 0) {
+    return {
+      action: 'stats',
+      totalKeys: 0,
+      activeKeys: 0,
+      expiredKeys: 0,
+      totalSizeBytes: 0,
+      totalSizeMB: '0.00',
+      averageItemSize: 0,
+      sourceDistribution: {},
+      message: 'Cache is empty'
+    };
+  }
+  
   // 获取详细信息用于统计
   const items = await Promise.all(
     allKeys.map(async (key: string) => {
-      const item = await cacheStorage.get(key);
+      // 使用getItem获取完整的CacheItem（如果可用）
+      const item = typeof cacheStorage.getItem === 'function'
+        ? await cacheStorage.getItem(key)
+        : null;
+      
+      if (!item) {
+        // 回退：只获取数据
+        const data = await cacheStorage.get(key);
+        return {
+          key,
+          size: data ? JSON.stringify(data).length : 0,
+          expiresAt: null,
+          createdAt: null,
+          isExpired: false
+        };
+      }
+      
+      // item是完整的CacheItem对象
       return {
         key,
-        size: item ? JSON.stringify(item.data).length : 0,
-        expiresAt: item?.expiresAt,
-        createdAt: item?.createdAt,
-        isExpired: item?.expiresAt ? Date.now() > item.expiresAt : false
+        size: item.data ? JSON.stringify(item.data).length : 0,
+        expiresAt: item.expiresAt,
+        createdAt: item.createdAt,
+        isExpired: item.expiresAt ? Date.now() > item.expiresAt : false
       };
     })
   );
