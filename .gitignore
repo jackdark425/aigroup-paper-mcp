@@ -32,3 +32,6 @@ logs/
 # Cache
 .cache/
 *.cache
+# Cache directories
+cache/
+.roo/
