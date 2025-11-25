@@ -1,1 +1,0 @@
-{"mcpServers":{"aigroup-paper-mcp":{"command":"npx","args":["aigroup-paper-mcp"],"alwaysAllow":["fetch_paper","fetch_latest","list_categories","advanced_search","trend_analysis","search_papers","manage_cache","smart_cache_search"],"disabled":false,"timeout":600}}}
