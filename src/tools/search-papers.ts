@@ -14,7 +14,10 @@ import { ResultAssembler } from './search/result-assembler.js';
 const logger = new Logger('SearchPapersTool');
 
 export const searchPapersSchema = z.object({
-  query: z.string().describe('Search query keywords'),
+  query: z.string()
+    .min(1, 'Query cannot be empty')
+    .max(2000, 'Query too long (max 2000 characters)')
+    .describe('Search query keywords'),
   sources: z.array(z.nativeEnum(PlatformSource)).optional()
     .describe('Specific platforms to search (leave empty for all enabled platforms)'),
   field: z.nativeEnum(SearchField).optional()
@@ -44,9 +47,81 @@ export const searchPapersSchema = z.object({
 export type SearchPapersInput = z.infer<typeof searchPapersSchema>;
 
 /**
+ * 验证和清理查询
+ */
+function validateAndCleanQuery(query: string): string {
+  // 移除前后空格
+  const trimmed = query.trim();
+  
+  // 检查是否为空
+  if (!trimmed) {
+    throw new Error('Query cannot be empty');
+  }
+  
+  // 移除潜在的危险字符
+  const cleaned = trimmed
+    .replace(/[;]/g, ' ')  // 移除分号
+    .replace(/--/g, ' ')   // 移除SQL注释符
+    .replace(/\/\*/g, ' ') // 移除块注释开始
+    .replace(/\*\//g, ' ') // 移除块注释结束
+    .trim();
+  
+  // 再次检查清理后是否为空
+  if (!cleaned) {
+    throw new Error('Query contains no valid search terms');
+  }
+  
+  // 检查长度是否超过合理范围
+  if (cleaned.length > 2000) {
+    logger.warn(`Query too long (${cleaned.length} chars), truncating to 2000 chars`);
+    return cleaned.substring(0, 2000).trim();
+  }
+  
+  return cleaned;
+}
+
+/**
  * 增强的搜索论文函数，集成智能建议、搜索策略优化和结果增强
  */
 export async function searchPapers(params: SearchPapersInput): Promise<EnhancedSearchResult> {
+  // 验证和清理查询
+  let processedQuery: string;
+  try {
+    processedQuery = validateAndCleanQuery(params.query);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Invalid query';
+    logger.error('Query validation failed', { error: errorMessage, query: params.query });
+    
+    const now = new Date();
+    return {
+      papers: [],
+      total: 0,
+      totalBySource: {},
+      query: params.query,
+      warnings: [errorMessage],
+      enhancedStats: {
+        citationStats: {
+          totalCitations: 0,
+          averageCitations: 0,
+          maxCitations: 0,
+          citationDistribution: []
+        },
+        timeStats: {
+          oldestPaper: now,
+          newestPaper: now,
+          publicationYears: []
+        },
+        platformStats: {},
+        impactStats: {
+          highImpactCount: 0,
+          mediumImpactCount: 0,
+          lowImpactCount: 0,
+          averageImpactScore: 0
+        }
+      }
+    };
+  }
+
   const {
     enableSmartSuggestions = true,
     enableEnhancement = true,
@@ -58,13 +133,13 @@ export async function searchPapers(params: SearchPapersInput): Promise<EnhancedS
 
   // 1. 处理参数
   const {
-    processedQuery,
+    processedQuery: finalQuery,
     finalSources,
     finalField,
     suggestions,
     warnings
   } = ParameterProcessor.processSearchParameters(
-    searchParams.query,
+    processedQuery,
     searchParams.sources,
     searchParams.field,
     enableSmartSuggestions
@@ -72,7 +147,7 @@ export async function searchPapers(params: SearchPapersInput): Promise<EnhancedS
 
   // 2. 构建搜索查询
   const query: SearchQuery = {
-    query: processedQuery,
+    query: finalQuery,
     field: finalField,
     sources: finalSources,
     categories: searchParams.categories,
@@ -82,7 +157,7 @@ export async function searchPapers(params: SearchPapersInput): Promise<EnhancedS
     offset: searchParams.offset
   };
 
-  logger.info(`搜索论文: ${processedQuery}`, {
+  logger.info(`搜索论文: ${finalQuery}`, {
     field: finalField,
     enableSmartSuggestions,
     enableEnhancement,
@@ -129,7 +204,7 @@ export async function searchPapers(params: SearchPapersInput): Promise<EnhancedS
   return await ResultAssembler.assembleSearchResult(
     searchResults,
     metrics,
-    processedQuery,
+    finalQuery,
     enableEnhancement,
     parallelConfig.enableDeduplication,
     warnings,

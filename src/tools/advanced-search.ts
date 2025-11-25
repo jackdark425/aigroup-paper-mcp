@@ -15,7 +15,10 @@ interface BooleanQuery {
 }
 
 export const advancedSearchSchema = z.object({
-  query: z.string().describe('Search query with boolean operators (AND, OR, NOT)'),
+  query: z.string()
+    .min(1, 'Query cannot be empty')
+    .max(2000, 'Query too long (max 2000 characters)')
+    .describe('Search query with boolean operators (AND, OR, NOT)'),
   sources: z.array(z.nativeEnum(PlatformSource)).optional()
     .describe('Specific platforms to search (leave empty for all enabled platforms)'),
   field: z.nativeEnum(SearchField).optional()
@@ -39,33 +42,24 @@ export const advancedSearchSchema = z.object({
 export type AdvancedSearchInput = z.infer<typeof advancedSearchSchema>;
 
 /**
- * 解析布尔查询字符串
+ * 改进的布尔查询解析器 - 正确处理括号和嵌套表达式
  */
 function parseBooleanQuery(query: string): BooleanQuery {
-  // 简单的布尔查询解析器
-  // 支持: term1 AND term2, term1 OR term2, NOT term, (term1 AND term2) OR term3
-  
   const normalized = query.trim();
   
-  // 处理括号表达式
-  if (normalized.startsWith('(') && normalized.endsWith(')')) {
-    return parseBooleanQuery(normalized.slice(1, -1));
+  if (!normalized) {
+    return { type: 'term', value: '' };
   }
   
-  // 检查 AND 操作符 (优先级最高)
-  const andIndex = findOperatorIndex(normalized, 'AND');
-  if (andIndex !== -1) {
-    return {
-      type: 'and',
-      children: [
-        parseBooleanQuery(normalized.slice(0, andIndex).trim()),
-        parseBooleanQuery(normalized.slice(andIndex + 3).trim())
-      ]
-    };
+  // 移除最外层的括号（如果整个表达式被括号包围）
+  const stripped = stripOuterParentheses(normalized);
+  if (stripped !== normalized) {
+    return parseBooleanQuery(stripped);
   }
   
-  // 检查 OR 操作符
-  const orIndex = findOperatorIndex(normalized, 'OR');
+  // 按优先级查找操作符：OR < AND < NOT
+  // 从左到右查找 OR（优先级最低）
+  const orIndex = findTopLevelOperator(normalized, 'OR');
   if (orIndex !== -1) {
     return {
       type: 'or',
@@ -76,7 +70,19 @@ function parseBooleanQuery(query: string): BooleanQuery {
     };
   }
   
-  // 检查 NOT 操作符
+  // 查找 AND
+  const andIndex = findTopLevelOperator(normalized, 'AND');
+  if (andIndex !== -1) {
+    return {
+      type: 'and',
+      children: [
+        parseBooleanQuery(normalized.slice(0, andIndex).trim()),
+        parseBooleanQuery(normalized.slice(andIndex + 3).trim())
+      ]
+    };
+  }
+  
+  // 查找 NOT（只在开头）
   if (normalized.toUpperCase().startsWith('NOT ')) {
     return {
       type: 'not',
@@ -92,26 +98,65 @@ function parseBooleanQuery(query: string): BooleanQuery {
 }
 
 /**
- * 查找操作符位置，忽略引号内的内容
+ * 移除最外层的括号（如果整个表达式被一对括号包围）
  */
-function findOperatorIndex(query: string, operator: string): number {
+function stripOuterParentheses(query: string): string {
+  if (!query.startsWith('(') || !query.endsWith(')')) {
+    return query;
+  }
+  
+  // 验证括号是否匹配且包围整个表达式
+  let depth = 0;
+  for (let i = 0; i < query.length; i++) {
+    if (query[i] === '(') depth++;
+    if (query[i] === ')') depth--;
+    
+    // 如果在结尾前depth变为0，说明括号不是包围整个表达式
+    if (depth === 0 && i < query.length - 1) {
+      return query;
+    }
+  }
+  
+  // 括号匹配且包围整个表达式，移除
+  return query.slice(1, -1).trim();
+}
+
+/**
+ * 查找顶层操作符位置（忽略引号和括号内的内容）
+ * 从左到右查找，确保右结合性
+ */
+function findTopLevelOperator(query: string, operator: string): number {
   let inQuotes = false;
+  let parenthesesDepth = 0;
   const upperQuery = query.toUpperCase();
   const upperOperator = operator.toUpperCase();
   
-  for (let i = 0; i < upperQuery.length; i++) {
-    if (upperQuery[i] === '"') {
+  for (let i = 0; i < query.length; i++) {
+    const char = query[i];
+    
+    // 处理引号
+    if (char === '"') {
       inQuotes = !inQuotes;
       continue;
     }
     
-    if (!inQuotes && upperQuery.startsWith(upperOperator, i)) {
-      // 确保操作符前后有空格或是字符串边界
-      const before = i === 0 || /\s/.test(query[i - 1]);
-      const after = i + operator.length === query.length || /\s/.test(query[i + operator.length]);
-      
-      if (before && after) {
-        return i;
+    // 处理括号
+    if (!inQuotes) {
+      if (char === '(') parenthesesDepth++;
+      if (char === ')') parenthesesDepth--;
+    }
+    
+    // 只在顶层查找操作符
+    if (!inQuotes && parenthesesDepth === 0) {
+      // 检查是否匹配操作符
+      if (upperQuery.substring(i, i + upperOperator.length) === upperOperator) {
+        // 确保操作符前后有空格或是字符串边界
+        const before = i === 0 || /\s/.test(query[i - 1]);
+        const after = i + upperOperator.length === query.length || /\s/.test(query[i + upperOperator.length]);
+        
+        if (before && after) {
+          return i;
+        }
       }
     }
   }
@@ -149,26 +194,60 @@ function buildPlatformQuery(ast: BooleanQuery, options: {
       
     case 'and':
       if (!ast.children || ast.children.length === 0) return '';
-      return ast.children.map(child => buildPlatformQuery(child, options)).join(' AND ');
+      const andTerms = ast.children.map(child => {
+        const childQuery = buildPlatformQuery(child, options);
+        // 如果子查询包含OR，需要加括号
+        if (child.type === 'or') {
+          return `(${childQuery})`;
+        }
+        return childQuery;
+      });
+      return andTerms.join(' AND ');
       
     case 'or':
       if (!ast.children || ast.children.length === 0) return '';
-      return ast.children.map(child => buildPlatformQuery(child, options)).join(' OR ');
+      const orTerms = ast.children.map(child => buildPlatformQuery(child, options));
+      return orTerms.join(' OR ');
       
     case 'not':
       if (!ast.children || ast.children.length === 0) return '';
-      return `NOT ${buildPlatformQuery(ast.children[0], options)}`;
+      const notTerm = buildPlatformQuery(ast.children[0], options);
+      // 如果NOT的内容包含操作符，需要加括号
+      if (ast.children[0].type !== 'term') {
+        return `NOT (${notTerm})`;
+      }
+      return `NOT ${notTerm}`;
       
     default:
       return '';
   }
 }
 
+/**
+ * 验证和清理查询
+ */
+function validateAndCleanQuery(query: string): string {
+  // 移除可能的SQL注入字符
+  const cleaned = query
+    .replace(/[;]/g, ' ')  // 移除分号
+    .replace(/--/g, ' ')   // 移除SQL注释
+    .trim();
+  
+  if (!cleaned) {
+    throw new Error('Query cannot be empty after sanitization');
+  }
+  
+  return cleaned;
+}
+
 export async function advancedSearch(params: AdvancedSearchInput) {
-  logger.info(`Advanced search: ${params.query}`);
+  // 验证和清理查询
+  const cleanedQuery = validateAndCleanQuery(params.query);
+  
+  logger.info(`Advanced search: ${cleanedQuery}`);
   
   // 解析布尔查询
-  const ast = parseBooleanQuery(params.query);
+  const ast = parseBooleanQuery(cleanedQuery);
   logger.debug(`Parsed query AST: ${JSON.stringify(ast)}`);
   
   // 构建平台查询
@@ -233,7 +312,7 @@ export async function advancedSearch(params: AdvancedSearchInput) {
     papers: allPapers,
     total: allPapers.length,
     totalBySource,
-    query: params.query,
+    query: cleanedQuery,
     parsedQuery: ast,
     platformQuery,
     warnings: warnings.length > 0 ? warnings : undefined,

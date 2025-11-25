@@ -28,7 +28,7 @@ interface PaperSummary {
 export const fetchLatestSchema = z.object({
   source: z.nativeEnum(PlatformSource)
     .describe('Platform source to fetch from'),
-  category: z.string()
+  category: z.string().optional()
     .describe('Category/subject to fetch from (platform-specific)'),
   limit: z.number().int().positive().max(50).default(10)
     .describe('Maximum number of papers to fetch'),
@@ -56,7 +56,7 @@ export async function fetchLatest(params: FetchLatestInput) {
   const useSummaryMode = params.summaryOnly ?? autoSummary;
   const enableEnhancement = params.enableEnhancement ?? true;
   
-  logger.info(`Fetching latest ${params.limit} papers from ${params.source}/${params.category}`, {
+  logger.info(`Fetching latest ${params.limit} papers from ${params.source}/${params.category || 'default'}`, {
     useCache: params.useCache,
     saveToFile: params.saveToFile,
     summaryMode: useSummaryMode,
@@ -79,7 +79,7 @@ export async function fetchLatest(params: FetchLatestInput) {
   }
 
   // 生成缓存键
-  const cacheKey = `fetch_latest:${params.source}:${params.category}:${params.limit}:${useSummaryMode}:${enableEnhancement}`;
+  const cacheKey = `fetch_latest:${params.source}:${params.category || 'default'}:${params.limit}:${useSummaryMode}:${enableEnhancement}`;
   
   // 尝试从缓存获取
   if (params.useCache && cacheStorage) {
@@ -107,7 +107,7 @@ export async function fetchLatest(params: FetchLatestInput) {
     throw new Error(`Driver for ${params.source} not found or not enabled`);
   }
   
-  let papers = await driver.fetchLatest(params.category, params.limit);
+  let papers = await driver.fetchLatest(params.category || 'cs.AI', params.limit);
   
   // 应用结果增强（如果启用）
   if (enableEnhancement && papers.length > 0) {
@@ -165,7 +165,7 @@ export async function fetchLatest(params: FetchLatestInput) {
   const result = {
     papers: processedPapers,
     source: params.source,
-    category: params.category,
+    category: params.category || 'cs.AI',
     count: papers.length,
     originalCount: papers.length,
     processedCount: processedPapers.length,
