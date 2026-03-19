@@ -1,10 +1,24 @@
 {
   "name": "aigroup-paper-mcp",
   "version": "0.3.6",
-  "description": "A unified academic paper search and retrieval MCP server integrating 11+ academic platforms",
+  "description": "Academic paper search and retrieval MCP server integrating major scholarly sources through a unified interface.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "author": {
+    "name": "AI Group",
+    "email": "jackdark425@gmail.com",
+    "url": "https://github.com/jackdark425"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jackdark425/aigroup-paper-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jackdark425/aigroup-paper-mcp/issues"
+  },
+  "homepage": "https://github.com/jackdark425/aigroup-paper-mcp#readme",
   "bin": {
     "aigroup-paper-mcp": "dist/server.js"
   },
@@ -12,7 +26,7 @@
     "dist/**/*",
     "LICENSE",
     "README.md",
-    "claude_desktop_config.json"
+    ".env.example"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -25,9 +39,20 @@
     "clean:gitkeep": "node scripts/remove-gitkeep.js",
     "prepare": "npm run build"
   },
-  "keywords": ["mcp", "academic", "papers", "arxiv", "research", "ai"],
-  "author": "AIGROUP",
-  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "academic",
+    "papers",
+    "research",
+    "arxiv",
+    "openalex",
+    "scholar",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
